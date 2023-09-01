@@ -62,13 +62,22 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+#pragma region Tile Generation
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void Create2DTileArray();
+
+	UFUNCTION(Category = "ArrayCreation")
+	void LinkTile(ASTile* Tile, FMultiTileStruct Col);
 
 	//2D array to hold all tiles
 	TArray <FMultiTileStruct*> MyArray;
 	//TArray<TArray<AActor*>> test;
-	
+
+
+#pragma endregion
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
