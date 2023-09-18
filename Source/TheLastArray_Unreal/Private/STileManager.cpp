@@ -56,7 +56,9 @@ void ASTileManager::Create2DTileArray()
 			ASTile* T = GetWorld()->SpawnActor<ASTile>(TileBase, FVector((this->GetActorLocation().X + (5 * 100 * XIndex)), (this->GetActorLocation().Z + (5 * 100 * ZIndex)), this->GetActorLocation().Y), this->GetActorRotation(), SpawnParams);
 			T->SetActorLabel(TileName);
 			T->SetOwner(this);
-			//T->SetRootComponent(TilesRoot);
+#if WITH_EDITOR
+			T->SetFolderPath(TileSubFolderName);
+#endif
 			
 			T->XIndex = XIndex;
 			T->ZIndex = ZIndex;
@@ -103,7 +105,9 @@ void ASTileManager::LinkTile(ASTile* ThisTile, FMultiTileStruct Col)
 			ThisTile->DownDoor = GetWorld()->SpawnActor<ASTileDoor>(TileDoor, Spawm, SpawnParams);
 			ThisTile->DownDoor->SetActorLabel(TileDownDoorName);
 			ThisTile->DownDoor->SetOwner(ThisTile);
-			//ThisTile->DownDoor->SetRootComponent(ThisTile->DoorsRoot);
+#if WITH_EDITOR
+			ThisTile->DownDoor->SetFolderPath(DoorSubFolderName);
+#endif
 			DownNeighbor->UpDoor = ThisTile->DownDoor;
 		}
 
@@ -138,7 +142,9 @@ void ASTileManager::LinkTile(ASTile* ThisTile, FMultiTileStruct Col)
 			ThisTile->RightDoor = GetWorld()->SpawnActor<ASTileDoor>(TileDoor, Spawm, SpawnParams);
 			ThisTile->RightDoor->SetActorLabel(TileRightDoorName);
 			ThisTile->RightDoor->SetOwner(ThisTile);
-			//ThisTile->RightDoor->SetRootComponent(ThisTile->DoorsRoot);
+#if WITH_EDITOR
+			ThisTile->RightDoor->SetFolderPath(DoorSubFolderName);
+#endif
 			LeftNeighbor->RightDoor = ThisTile->RightDoor;
 		}
 	}

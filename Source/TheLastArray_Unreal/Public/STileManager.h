@@ -66,6 +66,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* TilesRoot;
 
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	FName TileSubFolderName;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	FName DoorSubFolderName;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
