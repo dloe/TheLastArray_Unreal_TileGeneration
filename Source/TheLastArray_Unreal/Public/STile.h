@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "STileDoor.h"
 #include "STile.generated.h"
 
 UCLASS()
@@ -32,6 +33,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintNativeEvent, Category = "Tile Setup")
+	void SetUpDoorTransforms();
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* DoorsRoot;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Tile Stats")
 	float TileLength;
 
@@ -42,12 +49,33 @@ public:
 	int32 ZIndex;
 
 	//Neighbors
-	UPROPERTY(EditAnywhere, Category = "Tile Stats")
+	UPROPERTY(EditAnywhere, Category = "Tile Components")
 	ASTile* UpNeighbor; //index above us, aka greater 
-	UPROPERTY(EditAnywhere, Category = "Tile Stats")
+	UPROPERTY(EditAnywhere, Category = "Tile Components")
 	ASTile* DownNeighbor;
-	UPROPERTY(EditAnywhere, Category = "Tile Stats")
+	UPROPERTY(EditAnywhere, Category = "Tile Components")
 	ASTile* LeftNeighbor;
-	UPROPERTY(EditAnywhere, Category = "Tile Stats")
+	UPROPERTY(EditAnywhere, Category = "Tile Components")
 	ASTile* RightNeighbor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	ASTileDoor* UpDoor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Tile Components")
+	ASTileDoor* DownDoor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	ASTileDoor* LeftDoor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	ASTileDoor* RightDoor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	FTransform UpDoorSpawnPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	FTransform DownDoorSpawnPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	FTransform LeftDoorSpawnPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	FTransform RightDoorSpawnPoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	AActor* DownDoorSpawnTEST;
 };

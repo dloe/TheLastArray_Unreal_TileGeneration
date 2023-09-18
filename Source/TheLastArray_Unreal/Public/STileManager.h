@@ -22,7 +22,7 @@ public:
 	//Constructor 
 	FMultiTileStruct()
 	{
-		UE_LOG(LogTemp, Log, TEXT("In FMultiTileStruct Constructor..."));
+		//UE_LOG(LogTemp, Log, TEXT("In FMultiTileStruct Constructor..."));
 		TileColumn.Empty();
 	}
 
@@ -51,12 +51,20 @@ public:
 	// Sets default values for this actor's properties
 	ASTileManager();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	TSubclassOf<ASTile> TileBase;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TSubclassOf<ASTileDoor> TileDoor;
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	int Height = 5;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	int Width = 5;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	bool DoorsActive = false;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* TilesRoot;
 
 protected:
 	// Called when the game starts or when spawned
@@ -74,6 +82,7 @@ protected:
 	TArray <FMultiTileStruct*> MyArray;
 	//TArray<TArray<AActor*>> test;
 
+	
 
 #pragma endregion
 
