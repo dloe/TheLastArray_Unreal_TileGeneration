@@ -39,6 +39,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* DoorsRoot;
 
+#pragma region Tile Stats
 	UPROPERTY(EditDefaultsOnly, Category = "Tile Stats")
 	float TileLength;
 
@@ -48,34 +49,93 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Stats")
 	int32 ZIndex;
 
+	UENUM(BlueprintType)
+	enum class ETileStatus : int8 {
+		ETile_NULLROOM UMETA(DisplayName = "NullRoom"),
+		ETile_PATH  UMETA(DisplayName = "Path"),
+		ETile_ROOM     UMETA(DisplayName = "Room"),
+		ETile_STARTINGROOM UMETA(DisplayName = "StartingRoom"),
+		ETile_SECRETROOM UMETA(DisplayName = "SecretRoom"),
+		ETile_BOSSROOM UMETA(DisplayName = "BossRoom"),
+	};
+
+	UPROPERTY(EditAnywhere, Category = "Tile Stats")
+	ETileStatus TileStatus;
+
+#pragma endregion
+
+#pragma region Tile Path
+
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
+	ASTile* PreviousTile;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
+	bool CheckForPath = false;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
+	bool PartOfPath = false;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
+	int PathNumber = -1;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
+	bool EndOfPath = false;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
+	bool ConnectedToPath = false;
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadeNull();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadePath();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadeActiveRoom();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadeBossRoom();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadeBossRoom();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadeStartingRoom();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadeSecretRoom();
+
+#pragma endregion
+
+#pragma region Tile Neighbors
 	//Neighbors
-	UPROPERTY(EditAnywhere, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Neighbors")
 	ASTile* UpNeighbor; //index above us, aka greater 
-	UPROPERTY(EditAnywhere, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Neighbors")
 	ASTile* DownNeighbor;
-	UPROPERTY(EditAnywhere, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Neighbors")
 	ASTile* LeftNeighbor;
-	UPROPERTY(EditAnywhere, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Neighbors")
 	ASTile* RightNeighbor;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components - Neighbors")
 	ASTileDoor* UpDoor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Tile Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = "Tile Components - Neighbors")
 	ASTileDoor* DownDoor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components - Neighbors")
 	ASTileDoor* LeftDoor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components - Neighbors")
 	ASTileDoor* RightDoor;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components - Neighbors")
 	FTransform UpDoorSpawnPoint;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components - Neighbors")
 	FTransform DownDoorSpawnPoint;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components - Neighbors")
 	FTransform LeftDoorSpawnPoint;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components - Neighbors")
 	FTransform RightDoorSpawnPoint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile Components")
-	AActor* DownDoorSpawnTEST;
+#pragma endregion
+
 };

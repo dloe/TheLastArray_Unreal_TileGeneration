@@ -67,6 +67,7 @@ void ASTileManager::Create2DTileArray()
 			Col->TileColumn.Add(T);
 			//T->SetUpDoorTransforms();
 			LinkTile(T, *Col);
+			T->ShadeActiveRoom();
 		}
 
 
