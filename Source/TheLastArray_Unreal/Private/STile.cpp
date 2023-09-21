@@ -38,38 +38,44 @@ void ASTile::SetUpDoorTransforms_Implementation()
 
 void ASTile::ShadeNull()
 {
-	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 50.0f, 20, FColor::Red, false, -1.0f);
+	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Red, false, 100);
 	TileStatus = ETileStatus::ETile_NULLROOM;
 }
 
 void ASTile::ShadePath()
 {
-	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 50.0f, 20, FColor::Blue, false, -1.0f);
+	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Blue, false, 100);
 	TileStatus = ETileStatus::ETile_PATH;
 }
 
 void ASTile::ShadeActiveRoom()
 {
-	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 50.0f, 20, FColor::Silver, false, -1.0f);
+	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Silver, false, 100);
 	TileStatus = ETileStatus::ETile_ROOM;
 }
 
 void ASTile::ShadeBossRoom()
 {
-	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 50.0f, 20, FColor::Emerald, false, -1.0f);
+	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Emerald, false, 100);
 	TileStatus = ETileStatus::ETile_BOSSROOM;
 }
 
 void ASTile::ShadeStartingRoom()
 {
-	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 50.0f, 20, FColor::Green, false, -1.0f);
+	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Green, false, 100);
 	TileStatus = ETileStatus::ETile_STARTINGROOM;
 }
 
 void ASTile::ShadeSecretRoom()
 {
-	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 50.0f, 20, FColor::Purple, false, -1.0f);
+	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Purple, false, 100);
 	TileStatus = ETileStatus::ETile_SECRETROOM;
+}
+
+void ASTile::ShadeTestRoom()
+{
+	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Magenta, false, 100);
+	TileStatus = ETileStatus::ETile_ROOM;
 }
 
 #pragma endregion

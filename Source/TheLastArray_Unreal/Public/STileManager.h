@@ -51,26 +51,50 @@ public:
 	// Sets default values for this actor's properties
 	ASTileManager();
 
+#pragma region Tile Generation
+
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	bool DebugPrints = false;
+
+	//attempt at managing random numbers and seeds
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	FRandomStream GameStream;
+
+
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	TSubclassOf<ASTile> TileBase;
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	TSubclassOf<ASTileDoor> TileDoor;
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	int Height = 5;
+	int LevelHeight = 5;
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	int Width = 5;
+	int LevelWidth = 5;
 
+	//are doors to be used in levels, some might not need them
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	bool DoorsActive = false;
 
+	//root component
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* TilesRoot;
 
+	//folder name for where tiles are placed when spawned
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	FName TileSubFolderName;
 
+	//folder name for where doors are placed when spawned
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	FName DoorSubFolderName;
+
+	//starting tile reference - TO DO: PROTECT THIS LATER
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* StartingTile;
+
+	//list of possible starting tiles - DO DO: PROTECT THIS LATER
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*> PossibleStartingTiles;
+
+#pragma endregion
 
 protected:
 	// Called when the game starts or when spawned
@@ -78,17 +102,29 @@ protected:
 
 
 #pragma region Tile Generation
+	//2D array to hold all tiles
+	TArray <FMultiTileStruct*> Grid2DArray;
+	//TArray<TArray<AActor*>> test;
+
+	
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void TileGeneration();
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void SeedSetup();
+
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void Create2DTileArray();
 
 	UFUNCTION(Category = "ArrayCreation")
 	void LinkTile(ASTile* Tile, FMultiTileStruct Col);
 
-	//2D array to hold all tiles
-	TArray <FMultiTileStruct*> MyArray;
-	//TArray<TArray<AActor*>> test;
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void ChooseStartEndRooms();
 
-	
+	UFUNCTION(BlueprintNativeEvent, Category = "ArrayCreation")
+	int RandomInt2(int MaxInt);
 
 #pragma endregion
 

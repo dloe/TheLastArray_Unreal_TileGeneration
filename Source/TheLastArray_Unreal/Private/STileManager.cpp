@@ -4,17 +4,33 @@
 #include "STileManager.h"
 #include <Engine/World.h>
 #include <string>
+#include <Math/UnrealMathUtility.h>
+#include <Kismet/KismetMathLibrary.h>
 
 // Sets default values
 ASTileManager::ASTileManager()
 {
+	
+
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	TilesRoot = CreateDefaultSubobject<USceneComponent>(TEXT("TilesRoot"));
 	RootComponent = TilesRoot;
+
+	//SeedSetup();
 }
 
+void ASTileManager::SeedSetup()
+{
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("Setting Up Seed..."));
+
+	GameStream.Initialize("GameSeed");
+	GameStream.GenerateNewSeed();
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("Seed: %d"), GameStream.GetCurrentSeed());
+}
 
 /// <summary>
 /// - on begin play, 2d array is populated and established. For now we will use hard coded sizes. 
@@ -24,17 +40,46 @@ ASTileManager::ASTileManager()
 void ASTileManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Create2DTileArray();
+	if (DebugPrints) {
+		UE_LOG(LogTemp, Log, TEXT("==========================================================="));
+		UE_LOG(LogTemp, Log, TEXT("================= TILE GENERATION ========================="));
+		UE_LOG(LogTemp, Log, TEXT("==========================================================="));
+	}
+	SeedSetup();
+	TileGeneration();
 
 }
 
-void ASTileManager::Create2DTileArray()
+void ASTileManager::TileGeneration()
 {
 	
 
-	UE_LOG(LogTemp, Log, TEXT("===================Creating 2D array!=============================="));
-	for (int32 XIndex = 0; XIndex < Width; XIndex++)
+
+	//create and link tiles into grid
+	//this includes establishment of doors if we need them
+	Create2DTileArray();
+
+	//once tiles are established, we now pick the starting tile
+	ChooseStartEndRooms();
+
+	//
+}
+
+
+
+/// <summary>
+/// Dylan Loe
+/// 
+/// Creation of 2d array for tiles
+/// Creates tiles
+/// </summary>
+void ASTileManager::Create2DTileArray()
+{
+	
+	if(DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("===================Creating 2D array!=============================="));
+		
+	for (int32 XIndex = 0; XIndex < LevelWidth; XIndex++)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("Column Number: %f"), XIndex);
 		//for each row, make each column
@@ -45,12 +90,13 @@ void ASTileManager::Create2DTileArray()
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 		//Populate TileColumn array with Tiles for Height size
-		for (int32 ZIndex = 0; ZIndex < Height; ZIndex++)
+		for (int32 ZIndex = 0; ZIndex < LevelHeight; ZIndex++)
 		{
 			//spawn in a Tile
 			//UE_LOG(LogTemp, Log, TEXT("--Tile: %f, %f"), XIndex, ZIndex);
 			FString TileName = "Tile_Row" + FString::FromInt(XIndex) + "_Col" + FString::FromInt(ZIndex);
-			UE_LOG(LogTemp, Log, TEXT("--Tile: %s"), *TileName);
+			if (DebugPrints)
+				UE_LOG(LogTemp, Log, TEXT("--Tile: %s"), *TileName);
 			//UE_LOG(LogTemp, Log, TEXT("--Tile: %f, %f"), XIndex, ZIndex);
 			//FVector NewLocal = FVector((this->GetActorLocation().X + (T->TileLength* 100 * XIndex)), (this->GetActorLocation().Z + (T->TileLength * 100 * ZIndex)), this->GetActorLocation().Y);
 			ASTile* T = GetWorld()->SpawnActor<ASTile>(TileBase, FVector((this->GetActorLocation().X + (5 * 100 * XIndex)), (this->GetActorLocation().Z + (5 * 100 * ZIndex)), this->GetActorLocation().Y), this->GetActorRotation(), SpawnParams);
@@ -71,18 +117,150 @@ void ASTileManager::Create2DTileArray()
 		}
 
 
-		MyArray.Add(Col);
+		Grid2DArray.Add(Col);
 	}
-	UE_LOG(LogTemp, Log, TEXT("===================2D array CREATED!=============================="));
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("===================2D array CREATED!=============================="));
 }
 
+/// <summary>
+/// Dylan Loe
+/// 
+/// Choosing the start and end room
+/// 
+/// TO DO: Do i really need to pick the end room?
+/// 
+/// </summary>
+void ASTileManager::ChooseStartEndRooms()
+{
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("=================== Choosing start and end rooms =============================="));
+
+	int startX = 0, startY = 0;
+	//will pick a random side and random tile on side to start
+	int side = 0;//GameStream.RandRange(0, 3);
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("Side Picked: %f"), side);
+
+
+
+	switch (side)
+	{
+		case 0:
+		//starting
+			startY = 0;
+			startX = GameStream.RandRange(0, LevelHeight - 1);
+			UE_LOG(LogTemp, Log, TEXT("num Picked: %d"), startX);
+			//DOWN;
+
+		//ending possible 
+		//opposite of startX (0) would be LevelWidth - 1
+		//for choosing the end tile, we will pick the opposite 2 rows/columns
+		//must be a distance of height/2 and/or column/2 to be added to a list to be randomly picked as end room
+		//cant pick tiles that are on the same row or column (no straight shots)
+		
+			for(int index2 = 0; index2 < (LevelWidth - 1)/2; index2++) {
+			//take every tile less than startY
+				for (int index = 0; index < startX; index++)
+				{
+					//ASTile* Possible = Grid2DArray[LevelWidth - 1]->TileColumn[index];
+					PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]);
+					Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]->ShadeTestRoom();
+				}
+
+				//take every tile greater than startY
+				for (int index = LevelHeight - 1; index > startX; index--)
+				{
+					PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]);
+					Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]->ShadeTestRoom();
+				}
+			}
+
+			UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
+			if(startX > (LevelWidth - 1)/2) { //more than half AFTER startX
+				
+				for (int index3 = 0; index3 < LevelHeight - 1; index3++)
+				{
+						UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), 0, LevelHeight - 1 - index3);
+						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index3]->TileColumn[0]);
+						Grid2DArray[0]->TileColumn[LevelHeight - 1 - index3]->ShadeTestRoom();
+				}
+			}
+			UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
+			if (startX < ((LevelWidth - 1)/2)) { //more than after BEFORE startX
+				
+				for (int index4 = 0; index4 < LevelHeight - 1; index4++)
+				{
+						UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index4, LevelWidth - 1);
+						PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1]->TileColumn[LevelHeight - 1 - index4]);
+						Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1]->ShadeTestRoom();
+				}
+			}
+
+
+			break;
+		case 1:
+			startX = GameStream.RandRange(0, LevelWidth - 1);
+			startY = 0;
+			//RIGHT;
+			
+			
+			break;
+		case 2:
+			startX = LevelWidth - 1;
+			startY = GameStream.RandRange(0, LevelHeight - 1);
+			//UP;
+
+
+			break;
+		case 3:
+			startX = GameStream.RandRange(0, LevelWidth - 1);
+			startY = LevelHeight - 1;
+			//LEFT;
+
+
+			break;
+		default:
+			if (DebugPrints)
+				UE_LOG(LogTemp, Log, TEXT("Issue here -> picked weird starting side in ChooseStartEndRooms"));
+			//startY = 0;
+			//startX = GameStream.RandRange(0, LevelHeight - 1);
+			//DOWN	
+
+
+			break;
+	}
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("Starting Tile is designated as [%d,%d]"), startY, startX);
+
+	StartingTile = Grid2DArray[startY]->TileColumn[startX];
+	//StartingTile->ShadeStartingRoom();
+
+	
+	
+
+}
+
+int ASTileManager::RandomInt2_Implementation(int MaxInt)
+{
+	return NULL;
+}
+
+/// <summary>
+/// Dylan Loe
+/// 
+/// ASSIGNING THE NEIGHBORS AND LINKING DOORS PER TILE
+/// connect this tile with the tiles to the left and below
+/// must have a HeightIndex less than us and greater than or = to 0
+/// must have a WidthIndex less than us and greater than or = to 0
+/// 
+/// </summary>
+/// <param name="ThisTile"></param>
+/// <param name="Col"></param>
 void ASTileManager::LinkTile(ASTile* ThisTile, FMultiTileStruct Col)
 {
+	//if (DebugPrints)
 	//UE_LOG(LogTemp, Log, TEXT("Linking Number: %f : %f"), Tile->XIndex, Tile->ZIndex);
-	//connect this tile with the tiles to the left and below
-	//must have a HeightIndex less than us and greater than or = to 0
-	//must have a WidthIndex less than us and greater than or = to 0
-
 	//for now I'm going to make right direction the positive one and left is negative
 
 	if (ThisTile->ZIndex > 0)
@@ -111,23 +289,11 @@ void ASTileManager::LinkTile(ASTile* ThisTile, FMultiTileStruct Col)
 #endif
 			DownNeighbor->UpDoor = ThisTile->DownDoor;
 		}
-
-		//if (ThisTile->ZIndex < Height)
-		//{
-			//ASTile* UpNeighbor = ThisTile->UpNeighbor;
-			//if (!UpNeighbor->DownDoor)
-			//{
-				//FString TileDownDoorName = "TileDoorConnecting_" + FString::FromInt(ThisTile->XIndex) + "_" + FString::FromInt(ThisTile->ZIndex) + "_to_" + FString::FromInt(UpNeighbor->XIndex) + "_" + FString::FromInt(UpNeighbor->ZIndex);
-				//ThisTile->UpDoor = GetWorld()->SpawnActor<ASTileDoor>(TileDoor, ThisTile->UpDoorSpawnPoint->GetActorLocation(), ThisTile->UpDoorSpawnPoint->GetActorRotation(), SpawnParams);
-
-				//UpNeighbor->UpDoor = ThisTile->UpDoor;
-			//}
-		//}
 	}
 	if (ThisTile->XIndex > 0)
 	{
-		ASTile* LeftNeighbor = ThisTile->LeftNeighbor = MyArray[ThisTile->XIndex - 1]->TileColumn[ThisTile->ZIndex];
-		MyArray[ThisTile->XIndex - 1]->TileColumn[ThisTile->ZIndex]->RightNeighbor = ThisTile;
+		ASTile* LeftNeighbor = ThisTile->LeftNeighbor = Grid2DArray[ThisTile->XIndex - 1]->TileColumn[ThisTile->ZIndex];
+		Grid2DArray[ThisTile->XIndex - 1]->TileColumn[ThisTile->ZIndex]->RightNeighbor = ThisTile;
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

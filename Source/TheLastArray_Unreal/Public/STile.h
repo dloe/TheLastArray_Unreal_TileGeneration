@@ -7,6 +7,16 @@
 #include "STileDoor.h"
 #include "STile.generated.h"
 
+UENUM(BlueprintType)
+	enum class ETileStatus : uint8 {
+		ETile_NULLROOM UMETA(DisplayName = "NullRoom"),
+		ETile_PATH  UMETA(DisplayName = "Path"),
+		ETile_ROOM     UMETA(DisplayName = "Room"),
+		ETile_STARTINGROOM UMETA(DisplayName = "StartingRoom"),
+		ETile_SECRETROOM UMETA(DisplayName = "SecretRoom"),
+		ETile_BOSSROOM UMETA(DisplayName = "BossRoom"),
+	};
+
 UCLASS()
 class THELASTARRAY_UNREAL_API ASTile : public AActor
 {
@@ -49,15 +59,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Stats")
 	int32 ZIndex;
 
-	UENUM(BlueprintType)
-	enum class ETileStatus : int8 {
-		ETile_NULLROOM UMETA(DisplayName = "NullRoom"),
-		ETile_PATH  UMETA(DisplayName = "Path"),
-		ETile_ROOM     UMETA(DisplayName = "Room"),
-		ETile_STARTINGROOM UMETA(DisplayName = "StartingRoom"),
-		ETile_SECRETROOM UMETA(DisplayName = "SecretRoom"),
-		ETile_BOSSROOM UMETA(DisplayName = "BossRoom"),
-	};
+	
 
 	UPROPERTY(EditAnywhere, Category = "Tile Stats")
 	ETileStatus TileStatus;
@@ -97,13 +99,13 @@ public:
 	void ShadeBossRoom();
 
 	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
-	void ShadeBossRoom();
-
-	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
 	void ShadeStartingRoom();
 
 	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
 	void ShadeSecretRoom();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadeTestRoom();
 
 #pragma endregion
 
