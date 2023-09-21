@@ -95,8 +95,8 @@ void ASTileManager::Create2DTileArray()
 			//spawn in a Tile
 			//UE_LOG(LogTemp, Log, TEXT("--Tile: %f, %f"), XIndex, ZIndex);
 			FString TileName = "Tile_Row" + FString::FromInt(XIndex) + "_Col" + FString::FromInt(ZIndex);
-			if (DebugPrints)
-				UE_LOG(LogTemp, Log, TEXT("--Tile: %s"), *TileName);
+			//if (DebugPrints)
+				//UE_LOG(LogTemp, Log, TEXT("--Tile: %s"), *TileName);
 			//UE_LOG(LogTemp, Log, TEXT("--Tile: %f, %f"), XIndex, ZIndex);
 			//FVector NewLocal = FVector((this->GetActorLocation().X + (T->TileLength* 100 * XIndex)), (this->GetActorLocation().Z + (T->TileLength * 100 * ZIndex)), this->GetActorLocation().Y);
 			ASTile* T = GetWorld()->SpawnActor<ASTile>(TileBase, FVector((this->GetActorLocation().X + (5 * 100 * XIndex)), (this->GetActorLocation().Z + (5 * 100 * ZIndex)), this->GetActorLocation().Y), this->GetActorRotation(), SpawnParams);
@@ -138,7 +138,7 @@ void ASTileManager::ChooseStartEndRooms()
 
 	int startX = 0, startY = 0;
 	//will pick a random side and random tile on side to start
-	int side = 0;//GameStream.RandRange(0, 3);
+	int side = 3;//GameStream.RandRange(0, 3);
 	if (DebugPrints)
 		UE_LOG(LogTemp, Log, TEXT("Side Picked: %f"), side);
 
@@ -150,7 +150,7 @@ void ASTileManager::ChooseStartEndRooms()
 		//starting
 			startY = 0;
 			startX = GameStream.RandRange(0, LevelHeight - 1);
-			UE_LOG(LogTemp, Log, TEXT("num Picked: %d"), startX);
+			//UE_LOG(LogTemp, Log, TEXT("num Picked: %d"), startX);
 			//DOWN;
 
 		//ending possible 
@@ -200,24 +200,138 @@ void ASTileManager::ChooseStartEndRooms()
 
 			break;
 		case 1:
-			startX = GameStream.RandRange(0, LevelWidth - 1);
-			startY = 0;
+			startY = GameStream.RandRange(0, LevelWidth - 1);
+			startX = 0;
 			//RIGHT;
+			
+			for (int index2 = 0; index2 < (LevelHeight - 1) / 2; index2++) {
+				//take every tile less than startY
+				for (int index = 0; index < startY; index++)
+				{
+					//ASTile* Possible = Grid2DArray[LevelWidth - 1]->TileColumn[index];
+					PossibleStartingTiles.Add(Grid2DArray[index]->TileColumn[LevelHeight - 1 - index2]);
+					Grid2DArray[index]->TileColumn[LevelHeight - 1 - index2]->ShadeTestRoom();
+				}
+
+				//take every tile greater than startY
+				for (int index = LevelHeight - 1; index > startY; index--)
+				{
+					PossibleStartingTiles.Add(Grid2DArray[index]->TileColumn[LevelHeight - 1 - index2]);
+					Grid2DArray[index]->TileColumn[LevelHeight - 1 - index2]->ShadeTestRoom();
+				}
+			}
+
+			UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d < %d"), startY, (LevelHeight - 1) / 2);
+			if (startY < (LevelHeight - 1) / 2) { //more than half AFTER startX
+
+				for (int index3 = 0; index3 < LevelWidth - 1; index3++)
+				{
+					UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), 0, LevelWidth - 1 - index3);
+					PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - index3]->TileColumn[0]);
+					Grid2DArray[0]->TileColumn[LevelWidth - 1 - index3]->ShadeTestRoom();
+				}
+			}
+			UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d ? %d"), startY, (LevelHeight - 1) / 2);
+			if (startY > ((LevelHeight - 1) / 2)) { //more than after BEFORE startX
+
+				for (int index4 = 0; index4 < LevelWidth - 1; index4++)
+				{
+					UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelWidth - 1 - index4, LevelHeight - 1);
+					PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1]->TileColumn[LevelWidth - 1 - index4]);
+					Grid2DArray[LevelWidth - 1 - index4]->TileColumn[LevelHeight - 1]->ShadeTestRoom();
+				}
+			}
 			
 			
 			break;
 		case 2:
-			startX = LevelWidth - 1;
-			startY = GameStream.RandRange(0, LevelHeight - 1);
+			startY = LevelWidth - 1;
+			startX = GameStream.RandRange(0, LevelHeight - 1);
 			//UP;
 
+			for (int index2 = 0; index2 < (LevelWidth - 1) / 2; index2++) {
+				//take every tile less than startY
+				for (int index = 0; index < startX; index++)
+				{
+					PossibleStartingTiles.Add(Grid2DArray[0 + index2]->TileColumn[index]);
+					Grid2DArray[0 + index2]->TileColumn[index]->ShadeTestRoom();
+				}
+
+				//take every tile greater than startY
+				for (int index = LevelHeight - 1; index > startX; index--)
+				{
+					PossibleStartingTiles.Add(Grid2DArray[0 + index2]->TileColumn[index]);
+					Grid2DArray[0 + index2]->TileColumn[index]->ShadeTestRoom();
+				}
+			}
+
+			UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
+			if (startX > (LevelWidth - 1) / 2) { //more than half AFTER startX
+
+				for (int index3 = 0; index3 < LevelHeight - 1; index3++)
+				{
+					UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), index3, 0);
+					PossibleStartingTiles.Add(Grid2DArray[index3]->TileColumn[0]);
+					Grid2DArray[index3]->TileColumn[0]->ShadeTestRoom();
+				}
+			}
+			UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
+			if (startX < ((LevelWidth - 1) / 2)) { //more than after BEFORE startX
+
+				for (int index4 = 0; index4 < LevelHeight - 1; index4++)
+				{
+					UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), index4, LevelWidth - 1);
+					PossibleStartingTiles.Add(Grid2DArray[index4]->TileColumn[LevelWidth - 1]);
+					Grid2DArray[index4]->TileColumn[LevelWidth - 1]->ShadeTestRoom();
+				}
+			}
 
 			break;
 		case 3:
-			startX = GameStream.RandRange(0, LevelWidth - 1);
-			startY = LevelHeight - 1;
+			startY = GameStream.RandRange(0, LevelHeight - 1);
+			startX = LevelWidth - 1;
 			//LEFT;
 
+			for (int index2 = 0; index2 < (LevelHeight - 1) / 2; index2++) {
+				//take every tile less than startY
+				for (int index = 0; index < startY; index++)
+				{
+					PossibleStartingTiles.Add(Grid2DArray[index]->TileColumn[index2]);
+					Grid2DArray[index]->TileColumn[index2]->ShadeTestRoom();
+				}
+
+				//take every tile greater than startY
+				for (int index = LevelWidth - 1; index > startY; index--)
+				{
+					PossibleStartingTiles.Add(Grid2DArray[index]->TileColumn[index2]);
+					Grid2DArray[index]->TileColumn[index2]->ShadeTestRoom();
+				}
+			}
+			
+			if (startY > (LevelHeight - 1) / 2) { //more than half BEFORE startX
+				for (int extra = 0; extra < (startY)-((LevelWidth) / 2); extra++) {
+					UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startY, (LevelHeight - 1) / 2);
+				
+					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
+					{
+						UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), extra, index3);
+						PossibleStartingTiles.Add(Grid2DArray[extra]->TileColumn[index3]);
+						Grid2DArray[extra]->TileColumn[index3]->ShadeTestRoom();
+					}
+				}
+			}
+			
+			if (startY < ((LevelHeight - 1) / 2)) { //more than after AFTER startX
+				for (int extra = 0; extra < (LevelWidth - startY) - ((LevelWidth) / 2); extra++) {
+					UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startY, (LevelHeight - 1) / 2);
+					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
+					{
+						UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"),  LevelWidth - 1 - extra, index4);
+						PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - extra]->TileColumn[index4]);
+						Grid2DArray[LevelWidth - 1 - extra]->TileColumn[index4]->ShadeTestRoom();
+					}
+				}
+			}
 
 			break;
 		default:
@@ -234,7 +348,7 @@ void ASTileManager::ChooseStartEndRooms()
 		UE_LOG(LogTemp, Log, TEXT("Starting Tile is designated as [%d,%d]"), startY, startX);
 
 	StartingTile = Grid2DArray[startY]->TileColumn[startX];
-	//StartingTile->ShadeStartingRoom();
+	StartingTile->ShadeStartingRoom();
 
 	
 	
