@@ -6,6 +6,7 @@
 #include <string>
 #include <Math/UnrealMathUtility.h>
 #include <Kismet/KismetMathLibrary.h>
+#include "../TheLastArray_Unreal.h"
 
 // Sets default values
 ASTileManager::ASTileManager()
@@ -65,8 +66,6 @@ void ASTileManager::TileGeneration()
 	//
 }
 
-
-
 /// <summary>
 /// Dylan Loe
 /// 
@@ -113,7 +112,7 @@ void ASTileManager::Create2DTileArray()
 			Col->TileColumn.Add(T);
 			//T->SetUpDoorTransforms();
 			LinkTile(T, *Col);
-			T->ShadeActiveRoom();
+			T->ShadeNull();
 		}
 
 
@@ -138,7 +137,7 @@ void ASTileManager::ChooseStartEndRooms()
 
 	int startX = 0, startY = 0;
 	//will pick a random side and random tile on side to start
-	int side = 3;//GameStream.RandRange(0, 3);
+	int side = GameStream.RandRange(0, 3);
 	if (DebugPrints)
 		UE_LOG(LogTemp, Log, TEXT("Side Picked: %f"), side);
 
@@ -176,24 +175,26 @@ void ASTileManager::ChooseStartEndRooms()
 				}
 			}
 
-			UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
+			//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
 			if(startX > (LevelWidth - 1)/2) { //more than half AFTER startX
-				
-				for (int index3 = 0; index3 < LevelHeight - 1; index3++)
-				{
-						UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), 0, LevelHeight - 1 - index3);
-						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index3]->TileColumn[0]);
-						Grid2DArray[0]->TileColumn[LevelHeight - 1 - index3]->ShadeTestRoom();
+				for (int extra = 0; extra < (startX)-((LevelHeight) / 2); extra++) {
+					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index3, extra);
+						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index3]->TileColumn[extra]);
+						Grid2DArray[LevelHeight - 1 - index3]->TileColumn[extra]->ShadeTestRoom();
+					}
 				}
 			}
-			UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
+			//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
 			if (startX < ((LevelWidth - 1)/2)) { //more than after BEFORE startX
-				
-				for (int index4 = 0; index4 < LevelHeight - 1; index4++)
-				{
-						UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index4, LevelWidth - 1);
-						PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1]->TileColumn[LevelHeight - 1 - index4]);
-						Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1]->ShadeTestRoom();
+				for (int extra = 0; extra < (LevelHeight - startX - 1) - ((LevelHeight) / 2); extra++) {
+					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index4, LevelWidth - 1 - extra);
+						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1 - extra]);
+						Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1 - extra]->ShadeTestRoom();
+					}
 				}
 			}
 
@@ -202,7 +203,7 @@ void ASTileManager::ChooseStartEndRooms()
 		case 1:
 			startY = GameStream.RandRange(0, LevelWidth - 1);
 			startX = 0;
-			//RIGHT;
+			//LEFT;
 			
 			for (int index2 = 0; index2 < (LevelHeight - 1) / 2; index2++) {
 				//take every tile less than startY
@@ -221,24 +222,29 @@ void ASTileManager::ChooseStartEndRooms()
 				}
 			}
 
-			UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d < %d"), startY, (LevelHeight - 1) / 2);
-			if (startY < (LevelHeight - 1) / 2) { //more than half AFTER startX
 
-				for (int index3 = 0; index3 < LevelWidth - 1; index3++)
-				{
-					UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), 0, LevelWidth - 1 - index3);
-					PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - index3]->TileColumn[0]);
-					Grid2DArray[0]->TileColumn[LevelWidth - 1 - index3]->ShadeTestRoom();
+			//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d < %d"), startY, (LevelHeight - 1) / 2);
+			if (startY > (LevelHeight - 1) / 2) { //more than half BEFORE startX
+				//UE_LOG(LogTemp, Log, TEXT("Check: %d"), (startY)-((LevelWidth) / 2));
+				for (int extra = 0; extra < (startY)-((LevelWidth) / 2); extra++) {
+					for (int index3 = 0; index3 < LevelWidth - 1; index3++)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), extra, LevelWidth - 1 - index3);
+						PossibleStartingTiles.Add(Grid2DArray[extra]->TileColumn[LevelWidth - 1 - index3]);
+						Grid2DArray[extra]->TileColumn[LevelWidth - 1 - index3]->ShadeTestRoom();
+					}
 				}
 			}
-			UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d ? %d"), startY, (LevelHeight - 1) / 2);
-			if (startY > ((LevelHeight - 1) / 2)) { //more than after BEFORE startX
-
-				for (int index4 = 0; index4 < LevelWidth - 1; index4++)
-				{
-					UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelWidth - 1 - index4, LevelHeight - 1);
-					PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1]->TileColumn[LevelWidth - 1 - index4]);
-					Grid2DArray[LevelWidth - 1 - index4]->TileColumn[LevelHeight - 1]->ShadeTestRoom();
+			//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d > %d"), startY, (LevelHeight - 1) / 2);
+			if (startY < ((LevelHeight - 1) / 2)) { //more than after AFTER startX
+				//UE_LOG(LogTemp, Log, TEXT("Check: %d"), (LevelWidth - startY - 1) - ((LevelWidth) / 2));
+				for (int extra = 0; extra < (LevelWidth - startY - 1) - ((LevelWidth) / 2); extra++) {
+					for (int index4 = 0; index4 < LevelWidth - 1; index4++)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - extra, LevelWidth - 1 - index4);
+						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - extra]->TileColumn[LevelWidth - 1 - index4]);
+						Grid2DArray[LevelHeight - 1 - extra]->TileColumn[LevelWidth - 1 - index4]->ShadeTestRoom();
+					}
 				}
 			}
 			
@@ -265,24 +271,26 @@ void ASTileManager::ChooseStartEndRooms()
 				}
 			}
 
-			UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
+			//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
 			if (startX > (LevelWidth - 1) / 2) { //more than half AFTER startX
-
-				for (int index3 = 0; index3 < LevelHeight - 1; index3++)
-				{
-					UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), index3, 0);
-					PossibleStartingTiles.Add(Grid2DArray[index3]->TileColumn[0]);
-					Grid2DArray[index3]->TileColumn[0]->ShadeTestRoom();
+				for (int extra = 0; extra < (startX)-((LevelHeight) / 2); extra++) {
+					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), index3, extra);
+						PossibleStartingTiles.Add(Grid2DArray[index3]->TileColumn[extra]);
+						Grid2DArray[index3]->TileColumn[extra]->ShadeTestRoom();
+					}
 				}
 			}
-			UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
+			//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
 			if (startX < ((LevelWidth - 1) / 2)) { //more than after BEFORE startX
-
-				for (int index4 = 0; index4 < LevelHeight - 1; index4++)
-				{
-					UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), index4, LevelWidth - 1);
-					PossibleStartingTiles.Add(Grid2DArray[index4]->TileColumn[LevelWidth - 1]);
-					Grid2DArray[index4]->TileColumn[LevelWidth - 1]->ShadeTestRoom();
+				for (int extra = 0; extra < (LevelHeight - startX - 1) - ((LevelHeight) / 2); extra++) {
+					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), index4, LevelWidth - 1 - extra);
+						PossibleStartingTiles.Add(Grid2DArray[index4]->TileColumn[LevelWidth - 1 - extra]);
+						Grid2DArray[index4]->TileColumn[LevelWidth - 1 - extra]->ShadeTestRoom();
+					}
 				}
 			}
 
@@ -290,7 +298,7 @@ void ASTileManager::ChooseStartEndRooms()
 		case 3:
 			startY = GameStream.RandRange(0, LevelHeight - 1);
 			startX = LevelWidth - 1;
-			//LEFT;
+			//RIGHT;
 
 			for (int index2 = 0; index2 < (LevelHeight - 1) / 2; index2++) {
 				//take every tile less than startY
@@ -307,26 +315,24 @@ void ASTileManager::ChooseStartEndRooms()
 					Grid2DArray[index]->TileColumn[index2]->ShadeTestRoom();
 				}
 			}
-			
 			if (startY > (LevelHeight - 1) / 2) { //more than half BEFORE startX
 				for (int extra = 0; extra < (startY)-((LevelWidth) / 2); extra++) {
-					UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startY, (LevelHeight - 1) / 2);
+					//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startY, (LevelHeight - 1) / 2);
 				
 					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
 					{
-						UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), extra, index3);
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), extra, index3);
 						PossibleStartingTiles.Add(Grid2DArray[extra]->TileColumn[index3]);
 						Grid2DArray[extra]->TileColumn[index3]->ShadeTestRoom();
 					}
 				}
 			}
-			
 			if (startY < ((LevelHeight - 1) / 2)) { //more than after AFTER startX
-				for (int extra = 0; extra < (LevelWidth - startY) - ((LevelWidth) / 2); extra++) {
-					UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startY, (LevelHeight - 1) / 2);
+				for (int extra = 0; extra < (LevelWidth - startY - 1) - ((LevelWidth) / 2); extra++) {
+					//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startY, (LevelHeight - 1) / 2);
 					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
 					{
-						UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"),  LevelWidth - 1 - extra, index4);
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"),  LevelWidth - 1 - extra, index4);
 						PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - extra]->TileColumn[index4]);
 						Grid2DArray[LevelWidth - 1 - extra]->TileColumn[index4]->ShadeTestRoom();
 					}
@@ -340,7 +346,45 @@ void ASTileManager::ChooseStartEndRooms()
 			//startY = 0;
 			//startX = GameStream.RandRange(0, LevelHeight - 1);
 			//DOWN	
+			for (int index2 = 0; index2 < (LevelWidth - 1) / 2; index2++) {
+				//take every tile less than startY
+				for (int index = 0; index < startX; index++)
+				{
+					//ASTile* Possible = Grid2DArray[LevelWidth - 1]->TileColumn[index];
+					PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]);
+					Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]->ShadeTestRoom();
+				}
 
+				//take every tile greater than startY
+				for (int index = LevelHeight - 1; index > startX; index--)
+				{
+					PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]);
+					Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]->ShadeTestRoom();
+				}
+			}
+
+			//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
+			if (startX > (LevelWidth - 1) / 2) { //more than half AFTER startX
+				for (int extra = 0; extra < (startX)-((LevelHeight) / 2); extra++) {
+					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index3, extra);
+						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index3]->TileColumn[extra]);
+						Grid2DArray[LevelHeight - 1 - index3]->TileColumn[extra]->ShadeTestRoom();
+					}
+				}
+			}
+			//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
+			if (startX < ((LevelWidth - 1) / 2)) { //more than after BEFORE startX
+				for (int extra = 0; extra < (LevelHeight - startX - 1) - ((LevelHeight) / 2); extra++) {
+					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
+					{
+						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index4, LevelWidth - 1 - extra);
+						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1 - extra]);
+						Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1 - extra]->ShadeTestRoom();
+					}
+				}
+			}
 
 			break;
 	}
@@ -350,14 +394,186 @@ void ASTileManager::ChooseStartEndRooms()
 	StartingTile = Grid2DArray[startY]->TileColumn[startX];
 	StartingTile->ShadeStartingRoom();
 
-	
-	
+	//end room is picked randomly from array of possible rooms
+	EndTile = PossibleStartingTiles[GameStream.RandRange(0, PossibleStartingTiles.Num() - 1)];
+	EndTile->ShadeEndRoom();
 
+	GeneratePath();
 }
 
-int ASTileManager::RandomInt2_Implementation(int MaxInt)
+//Use recursive backtracking maze algorithm
+void ASTileManager::GeneratePath()
 {
-	return NULL;
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("=================== Genearating Path =============================="));
+
+	//add starting room to be start of list
+	AddTileToPath(StartingTile);
+
+	//TArray<ASTile*> CurrentPath;
+	CheckTile(StartingTile, LevelPath);
+	
+
+
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("=================== Finished Path =============================="));
+}
+
+bool ASTileManager::AddTileToPath(ASTile* TileToAdd)
+{
+	//if (TileToAdd->TileStatus != ETileStatus::ETile_STARTINGROOM)
+	//{
+		
+	//}
+	//else {
+		//adding the starting tile to the list to begin
+		LevelPath.Add(TileToAdd);
+		TileToAdd->CheckForPath = true;
+		TileToAdd->PathNumber = PathNumber;
+		if(TileToAdd->TileStatus != ETileStatus::ETile_BOSSROOM)
+			TileToAdd->ShadePath();
+		PathNumber++;
+
+	//}
+
+	return true;
+}
+
+void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
+{
+	if(CurrentTile) {
+		UE_LOG(LogTemp, Log, TEXT("Currently on Tile: %d,%d"), CurrentTile->XIndex, CurrentTile->ZIndex);
+	}
+	else {
+		UE_LOG(LogTemp, Log, TEXT("NULL TILE DETECTED. PLEASE INVESTIGATE"));
+	}
+
+	//if the tile we are checking is the end tile
+	//if (CurrentTile->TileStatus == ETileStatus::ETile_BOSSROOM)
+	//{
+	//	UE_LOG(LogTemp, Log, TEXT("Found Boss Room!"));
+		
+	//} else {
+
+		//first check if all neighbors are unavailable
+		//if so, make this one as checked and call on previous tiles
+
+		if ((!CurrentTile->UpNeighbor || CurrentTile->UpNeighbor->CheckForPath) && (!CurrentTile->DownNeighbor || CurrentTile->DownNeighbor->CheckForPath)
+			&& (!CurrentTile->RightNeighbor || CurrentTile->RightNeighbor->CheckForPath) && (!CurrentTile->LeftNeighbor || CurrentTile->LeftNeighbor->CheckForPath))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Deadend found at %d,%d"), CurrentTile->XIndex, CurrentTile->ZIndex);
+			CurrentTile->CheckForPath = true;
+			CurrentTile->ShadeNull();
+
+			//eventually all of these tiles will be unchecked so a different path may go through them (dead ends,etc)
+			BackTrackHistory.Add(CurrentTile);
+
+			//CurrentPath.
+			CheckTile(CurrentTile->PreviousTile, CurrentPath);
+		} // boss room checks
+		else if ((CurrentTile->UpNeighbor != NULL && CurrentTile->UpNeighbor->TileStatus == ETileStatus::ETile_BOSSROOM))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Found Boss Room! at %d,%d"), CurrentTile->UpNeighbor->XIndex, CurrentTile->UpNeighbor->ZIndex);
+			CurrentTile->CheckForPath = true;
+			AddTileToPath(CurrentTile);
+			AddTileToPath(CurrentTile->UpNeighbor);
+
+		}
+		else if ((CurrentTile->DownNeighbor != NULL && CurrentTile->DownNeighbor->TileStatus == ETileStatus::ETile_BOSSROOM))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Found Boss Room! at %d,%d"), CurrentTile->DownNeighbor->XIndex, CurrentTile->DownNeighbor->ZIndex);
+			CurrentTile->CheckForPath = true;
+			AddTileToPath(CurrentTile);
+			AddTileToPath(CurrentTile->DownNeighbor);
+		}
+		else if ((CurrentTile->RightNeighbor != NULL && CurrentTile->RightNeighbor->TileStatus == ETileStatus::ETile_BOSSROOM))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Found Boss Room! at %d,%d"), CurrentTile->RightNeighbor->XIndex, CurrentTile->RightNeighbor->ZIndex);
+			CurrentTile->CheckForPath = true;
+			AddTileToPath(CurrentTile);
+			AddTileToPath(CurrentTile->RightNeighbor);
+		}
+		else if ((CurrentTile->LeftNeighbor != NULL && CurrentTile->LeftNeighbor->TileStatus == ETileStatus::ETile_BOSSROOM))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Found Boss Room! at %d,%d"), CurrentTile->LeftNeighbor->XIndex, CurrentTile->LeftNeighbor->ZIndex);
+			CurrentTile->CheckForPath = true;
+			AddTileToPath(CurrentTile);
+			AddTileToPath(CurrentTile->LeftNeighbor);
+		}
+		else {
+			//now that we know theres valid neighbors and none of them are the boss room, lets check our neighbors
+		
+			UE_LOG(LogTemp, Log, TEXT("Path Checking: %d,%d"), CurrentTile->XIndex, CurrentTile->ZIndex);
+			//direction
+			TArray <int> DirectionsToCheck = { 1, 2, 3, 4 };
+
+			DirectionsToCheck = Reshuffle(DirectionsToCheck, GameStream);
+
+			//pick direction and begin CheckTile
+			for (int DirectionCount = 0; DirectionCount < DirectionsToCheck.Num(); DirectionCount++)
+			{
+				switch (DirectionsToCheck[DirectionCount])
+				{
+				case 1:
+					//UP
+					if (CurrentTile->UpNeighbor && !CurrentTile->UpNeighbor->CheckForPath && CurrentTile->UpNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM && CurrentTile->UpNeighbor->TileStatus != ETileStatus::ETile_NULLROOM)
+					{
+						//add this tile to path, go to up neighbor
+						UE_LOG(LogTemp, Log, TEXT("Up Neighbor Valid: %d,%d - going there"), CurrentTile->UpNeighbor->XIndex, CurrentTile->UpNeighbor->ZIndex);
+						CurrentTile->UpNeighbor->PreviousTile = CurrentTile;
+						AddTileToPath(CurrentTile);
+						//no need to keep going through other directions directions
+						DirectionCount = 5;
+						CheckTile(CurrentTile->UpNeighbor, CurrentPath);
+					}
+					break;
+				case 2:
+					//DOWN
+					if (CurrentTile->DownNeighbor && !CurrentTile->DownNeighbor->CheckForPath)
+					{
+						UE_LOG(LogTemp, Log, TEXT("Down Neighbor Valid: %d,%d - going there"), CurrentTile->DownNeighbor->XIndex, CurrentTile->DownNeighbor->ZIndex);
+						CurrentTile->DownNeighbor->PreviousTile = CurrentTile;
+						AddTileToPath(CurrentTile);
+						DirectionCount = 5;
+						CheckTile(CurrentTile->DownNeighbor, CurrentPath);
+					}
+					break;
+				case 3:
+					//LEFT
+					if (CurrentTile->LeftNeighbor && !CurrentTile->LeftNeighbor->CheckForPath)
+					{
+						UE_LOG(LogTemp, Log, TEXT("Left Neighbor Valid: %d,%d - going there"), CurrentTile->LeftNeighbor->XIndex, CurrentTile->LeftNeighbor->ZIndex);
+						CurrentTile->LeftNeighbor->PreviousTile = CurrentTile;
+						AddTileToPath(CurrentTile);
+						DirectionCount = 5;
+						CheckTile(CurrentTile->LeftNeighbor, CurrentPath);
+					}
+					break;
+				case 4:
+					//RIGHT
+					if (CurrentTile->RightNeighbor && !CurrentTile->RightNeighbor->CheckForPath)
+					{
+						UE_LOG(LogTemp, Log, TEXT("Right Neighbor Valid: %d,%d - going there"), CurrentTile->RightNeighbor->XIndex, CurrentTile->RightNeighbor->ZIndex);
+						CurrentTile->RightNeighbor->PreviousTile = CurrentTile;
+						AddTileToPath(CurrentTile);
+						DirectionCount = 5;
+						CheckTile(CurrentTile->RightNeighbor, CurrentPath);
+					}
+					break;
+				}
+			}
+		//}
+	}
+}
+
+//History is mostly for debug
+void ASTileManager::ClearHistory()
+{
+	//for each(ASTile* Tile in BackTrackHistory)
+	for(int BIndex = 0; BIndex < BackTrackHistory.Num(); BIndex++)
+	{
+		BackTrackHistory[BIndex]->CheckForPath = false;
+	}
 }
 
 /// <summary>

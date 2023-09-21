@@ -74,8 +74,14 @@ void ASTile::ShadeSecretRoom()
 
 void ASTile::ShadeTestRoom()
 {
-	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Magenta, false, 100);
-	TileStatus = ETileStatus::ETile_ROOM;
+	//DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Magenta, false, 100);
+	//TileStatus = ETileStatus::ETile_ROOM;
+}
+
+void ASTile::ShadeEndRoom()
+{
+	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Black, false, 100);
+	TileStatus = ETileStatus::ETile_BOSSROOM;
 }
 
 #pragma endregion

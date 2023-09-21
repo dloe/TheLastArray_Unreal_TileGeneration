@@ -107,6 +107,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
 	void ShadeTestRoom();
 
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
+	void ShadeEndRoom();
+
 #pragma endregion
 
 #pragma region Tile Neighbors

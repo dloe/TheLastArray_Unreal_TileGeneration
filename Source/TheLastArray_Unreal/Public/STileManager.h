@@ -90,9 +90,25 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	ASTile* StartingTile;
 
+	//starting tile reference - TO DO: PROTECT THIS LATER
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* EndTile;
+
 	//list of possible starting tiles - DO DO: PROTECT THIS LATER
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	TArray<ASTile*> PossibleStartingTiles;
+
+	//list of possible starting tiles - DO DO: PROTECT THIS LATER
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*> LevelPath;
+
+	//list of possible starting tiles - DO DO: PROTECT THIS LATER
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*> BackTrackHistory;
+
+	//list of possible starting tiles - DO DO: PROTECT THIS LATER
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	int PathNumber = 0;
 
 #pragma endregion
 
@@ -123,8 +139,17 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void ChooseStartEndRooms();
 
-	UFUNCTION(BlueprintNativeEvent, Category = "ArrayCreation")
-	int RandomInt2(int MaxInt);
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void GeneratePath();
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	bool AddTileToPath(ASTile* TileToAdd);
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void CheckTile(ASTile* TileToAdd, TArray<ASTile*> CurrentPath);
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void ClearHistory();
 
 #pragma endregion
 
