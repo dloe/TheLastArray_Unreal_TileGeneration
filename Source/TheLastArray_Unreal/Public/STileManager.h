@@ -151,6 +151,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void ClearHistory();
 
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	TArray <int> Reshuffle2(TArray <int> ar);
+
 #pragma endregion
 
 

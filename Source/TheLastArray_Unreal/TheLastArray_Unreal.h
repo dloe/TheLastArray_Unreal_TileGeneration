@@ -34,15 +34,17 @@ static void LogOnScreen(UObject* WorldContext, FString Msg, FColor Color = FColo
 }
 
 //for reshuffling arrays
-static TArray <int> Reshuffle(TArray <int> ar, FRandomStream GameStream)
+//TO DO: For some reason this function was having issue with the GameStream keeping things consistently random. Random values weren't random and 
+//kept picking same index to swap, moving it into TileManager fixed this.
+static TArray <int> Reshuffle3(TArray <int> ar, FRandomStream GameStream)
 {
 	// Knuth shuffle algorithm :: courtesy of Wikipedia :)
 	for (int t = 0; t < ar.Num(); t++)
 	{
-		int tmp = ar[t];
+		//int tmp = ar[t];
 		int r = GameStream.RandRange(t, ar.Num() - 1);
-		ar[t] = ar[r];
-		ar[r] = tmp;
+		UE_LOG(LogTemp, Log, TEXT("Swapping: %d and %d"), t, r);
+		ar.Swap(t, r);
 	}
 	return ar;
 }
