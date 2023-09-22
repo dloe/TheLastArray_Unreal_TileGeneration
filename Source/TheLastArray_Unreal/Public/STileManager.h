@@ -110,6 +110,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	int PathNumber = 0;
 
+	//list of current active tiles - DO DO: PROTECT THIS LATER
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*>	AllActiveTiles;
+
+	//list of possible branching tiles, they can be used off main path or branches - DO DO: PROTECT THIS LATER
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*>	AvailableTiles;
+
 #pragma endregion
 
 protected:
@@ -150,6 +158,15 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void ClearHistory();
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void AddRandomRooms();
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void CheckBranchTile(ASTile* TileToAdd, TArray<ASTile*> CurrentPath, int Length);
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void MakeAvailableTiles();
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	TArray <int> Reshuffle2(TArray <int> ar);

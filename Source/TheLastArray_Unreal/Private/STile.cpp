@@ -36,6 +36,16 @@ void ASTile::SetUpDoorTransforms_Implementation()
 
 #pragma region Labeling Rooms
 
+void ASTile::ActivateDoorToPath()
+{
+
+}
+
+void ASTile::ActivateDoorsBranch()
+{
+
+}
+
 void ASTile::ShadeNull()
 {
 	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Red, false, 100);
@@ -45,6 +55,7 @@ void ASTile::ShadeNull()
 void ASTile::ShadePath()
 {
 	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Blue, false, 100);
+	
 	TileStatus = ETileStatus::ETile_PATH;
 }
 

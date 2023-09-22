@@ -408,34 +408,47 @@ void ASTileManager::GeneratePath()
 		UE_LOG(LogTemp, Log, TEXT("=================== Genearating Path =============================="));
 
 	//add starting room to be start of list
-	AddTileToPath(StartingTile);
+	//AddTileToPath(StartingTile);
 
-	//TArray<ASTile*> CurrentPath;
 	CheckTile(StartingTile, LevelPath);
-	
 
+	if (DebugPrints) {
+		//draw lines through path
+		for (int Index = 0; Index < LevelPath.Num() - 1; Index++)
+		{
+			DrawDebugLine(GetWorld(), LevelPath[Index]->GetActorLocation(), LevelPath[Index + 1]->GetActorLocation(), FColor::Blue, SDPG_World, 20.0f, 100);
+			//GetWorld()->LineBatcher->DrawLine(LevelPath[Index]->GetActorLocation(), LevelPath[Index + 1]->GetActorLocation(), FColor::Blue, SDPG_World, 10.0f, 100);
+		}
+	}
 
 	if (DebugPrints)
-		UE_LOG(LogTemp, Log, TEXT("=================== Finished Path =============================="));
+		UE_LOG(LogTemp, Log, TEXT("=================== Finished Path - Adding Random Rooms =============================="));
+
+	
+
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("=================== Finished Random Rooms - Adding Spawn Room =============================="));
+
+	//if (DebugPrints)
+	//	UE_LOG(LogTemp, Log, TEXT("=================== Finished Spawn Room - Adding Secret Room =============================="));
+
+	//if (DebugPrints)
+	//	UE_LOG(LogTemp, Log, TEXT("=================== Finished Secret Room - Implementing Final Tile Setup =============================="));
+
+
+	//if (DebugPrints)
+	//	UE_LOG(LogTemp, Log, TEXT("=================== Finished Implementing Final Tile Setup - Beginning Populating Grid =============================="));
 }
 
 bool ASTileManager::AddTileToPath(ASTile* TileToAdd)
 {
-	//if (TileToAdd->TileStatus != ETileStatus::ETile_STARTINGROOM)
-	//{
+	PathNumber++;
+	LevelPath.AddUnique(TileToAdd);
+	TileToAdd->CheckForPath = true;
+	TileToAdd->PathNumber = PathNumber;
+	if(TileToAdd->TileStatus != ETileStatus::ETile_BOSSROOM && TileToAdd->TileStatus != ETileStatus::ETile_STARTINGROOM)
+		TileToAdd->ShadePath();
 		
-	//}
-	//else {
-		//adding the starting tile to the list to begin
-		LevelPath.Add(TileToAdd);
-		TileToAdd->CheckForPath = true;
-		TileToAdd->PathNumber = PathNumber;
-		if(TileToAdd->TileStatus != ETileStatus::ETile_BOSSROOM && TileToAdd->TileStatus != ETileStatus::ETile_STARTINGROOM)
-			TileToAdd->ShadePath();
-		PathNumber++;
-
-	//}
-
 	return true;
 }
 
@@ -574,6 +587,204 @@ void ASTileManager::ClearHistory()
 	}
 }
 
+/// <summary>
+/// Dylan Loe
+/// 
+/// - Adding Single random and branches to grid
+/// </summary>
+void ASTileManager::AddRandomRooms()
+{
+	if (DebugPrints)
+			UE_LOG(LogTemp, Log, TEXT("Adding Branches"));
+
+	//AllActiveTiles.Append(LevelPath, LevelPath.Num());
+	AllActiveTiles.Append(LevelPath);
+
+	MakeAvailableTiles();
+
+	//pick random index that isn't boss tile
+	//pick a valid neighbor that isn't part of path or outside grid, thats not a boss tile
+	//this tile is now the start of a branch
+
+	//how long will branch be?
+	int BranchCount = GameStream.RandRange(1,(LevelWidth - LevelPath.Num() / LevelWidth) + 1);
+	UE_LOG(LogTemp, Log, TEXT("Branch Length: %d"), BranchCount);
+
+	for (int Branch = 0; Branch < BranchCount; Branch++)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Making Branch: %d"), Branch);
+
+		//for now using length of level, might change this later, not sure how else but not a super important detail
+		int BranchLength = GameStream.RandRange(1, LevelWidth + 1);
+
+		ASTile* StartingBranchTile = AvailableTiles[GameStream.RandRange(0, AvailableTiles.Num() - 1)];
+		TArray<ASTile*>	BranchArray;
+
+		AvailableTiles.Remove(StartingTile);
+
+		CheckBranchTile(StartingBranchTile, BranchArray, BranchLength);
+
+		//TO DO: door logic goes here
+		if (DoorsActive)
+		{
+			BranchArray[0]->ActivateDoorsBranch();
+			BranchArray[0]->TileDescription += "_StartofBranch";
+		}
+
+		//run through branch
+		for (int BranchIndex = 0; BranchIndex < BranchArray.Num(); BranchIndex++)
+		{
+			BranchArray[BranchIndex]->TileDescription += "Branch_" + FString::FromInt(Branch) + "";
+			BranchArray[BranchIndex]->PathNumber = BranchIndex;
+
+			if (!AllActiveTiles.Contains(BranchArray[BranchIndex]))
+			{
+				AllActiveTiles.AddUnique(BranchArray[BranchIndex]);
+			}
+			else if (AvailableTiles.Contains(BranchArray[BranchIndex]))
+			{
+				AvailableTiles.Remove(BranchArray[BranchIndex]);
+			}
+
+			if (BranchIndex == BranchArray.Num() - 1)
+			{
+				BranchArray[BranchIndex]->TileDescription += "ENDBRANCH";
+				BranchArray[BranchIndex]->EndOfBranchPath = true;
+			}
+		}
+
+		// MORE DOOR LOGIC HERE
+		//ActiveDoorBranch stuff
+		if (DoorsActive)
+		{
+			for (int Index = 1; Index < BranchArray.Num(); Index++)
+			{
+				if (BranchArray[Index]->TileStatus == ETileStatus::ETile_ROOM)
+				{
+					BranchArray[Index]->ActivateDoorsBranch();
+				}
+			}
+		}
+
+		//start of this branch will have the door connecting to previous tile, the rest of the path will not have a door connecting to anything part of the path
+		//tiles on this branch can only connect to existing tiles in the list
+
+		//once we make branch, we go back through and remake the available tile spots
+		MakeAvailableTiles();
+
+	}
+
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("Adding Single Rooms..."));
+
+
+}
+
+void ASTileManager::CheckBranchTile(ASTile* TileToAdd, TArray<ASTile*> CurrentPath, int Length)
+{
+	if (Length > 0)
+	{
+		CurrentPath.Add(TileToAdd);
+		TileToAdd->ShadeActiveRoom();
+		TileToAdd->TileDescription = "";
+
+		if ((TileToAdd->RightNeighbor || TileToAdd->RightNeighbor->TileStatus != ETileStatus::ETile_NULLROOM) && (TileToAdd->LeftNeighbor || TileToAdd->LeftNeighbor->TileStatus != ETileStatus::ETile_NULLROOM)
+		&& (TileToAdd->UpNeighbor || TileToAdd->UpNeighbor->TileStatus != ETileStatus::ETile_NULLROOM) && (TileToAdd->DownNeighbor || TileToAdd->DownNeighbor->TileStatus != ETileStatus::ETile_NULLROOM))
+		{
+			//theres no where to go, lets just end the branch here to save time
+			Length = 0;
+			//exit branch
+			return;
+		}
+
+		TArray <int> DirectionsToCheck = { 1, 2, 3, 4 };
+
+		DirectionsToCheck = Reshuffle2(DirectionsToCheck);
+		//DirectionsToCheck.
+
+		//pick direction and begin CheckTile
+		for (int DirectionCount = 0; DirectionCount < DirectionsToCheck.Num(); DirectionCount++)
+		{
+			switch (DirectionsToCheck[DirectionCount])
+			{
+			case 1:
+				//UP
+				if (TileToAdd->UpNeighbor && !TileToAdd->UpNeighbor->CheckForPath && TileToAdd->UpNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM &&
+					TileToAdd->UpNeighbor->TileStatus == ETileStatus::ETile_NULLROOM) {
+
+					TileToAdd->UpNeighbor->PreviousTile = TileToAdd;
+					Length--;
+					CheckBranchTile(TileToAdd->UpNeighbor, CurrentPath, Length);
+					return;
+				}
+				break;
+			case 2:
+				//DOWN
+				if (TileToAdd->DownNeighbor && !TileToAdd->DownNeighbor->CheckForPath && TileToAdd->DownNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM &&
+					TileToAdd->DownNeighbor->TileStatus == ETileStatus::ETile_NULLROOM) {
+					
+					TileToAdd->DownNeighbor->PreviousTile = TileToAdd;
+					Length--;
+					CheckBranchTile(TileToAdd->DownNeighbor, CurrentPath, Length);
+					return;
+				}
+				break;
+			case 3:
+				//LEFT
+				if (TileToAdd->LeftNeighbor && !TileToAdd->LeftNeighbor->CheckForPath && TileToAdd->LeftNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM &&
+					TileToAdd->LeftNeighbor->TileStatus == ETileStatus::ETile_NULLROOM) {
+					
+					TileToAdd->LeftNeighbor->PreviousTile = TileToAdd;
+					Length--;
+					CheckBranchTile(TileToAdd->LeftNeighbor, CurrentPath, Length);
+					return;
+				}
+				break;
+			case 4:
+				//RIGHT
+				if (TileToAdd->RightNeighbor && !TileToAdd->RightNeighbor->CheckForPath && TileToAdd->RightNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM &&
+					TileToAdd->RightNeighbor->TileStatus == ETileStatus::ETile_NULLROOM) {
+					
+					TileToAdd->RightNeighbor->PreviousTile = TileToAdd;
+					Length--;
+					CheckBranchTile(TileToAdd->RightNeighbor, CurrentPath, Length);
+					return;
+				}
+				break;
+			}
+		}
+	}
+	return;
+}
+
+void ASTileManager::MakeAvailableTiles()
+{
+	for (int TileC = 0; TileC < AllActiveTiles.Num() - 1; TileC++)
+	{
+		ASTile* CurrentTile = AllActiveTiles[TileC];
+
+		//check each neighbor
+		if (CurrentTile->TileStatus != ETileStatus::ETile_BOSSROOM)
+		{
+			if (CurrentTile->UpNeighbor && CurrentTile->UpNeighbor->TileStatus == ETileStatus::ETile_NULLROOM && !AvailableTiles.Contains(CurrentTile->UpNeighbor))
+			{
+				AvailableTiles.Add(CurrentTile->UpNeighbor);
+			}
+			if (CurrentTile->DownNeighbor && CurrentTile->DownNeighbor->TileStatus == ETileStatus::ETile_NULLROOM && !AvailableTiles.Contains(CurrentTile->DownNeighbor))
+			{
+				AvailableTiles.Add(CurrentTile->DownNeighbor);
+			}
+			if (CurrentTile->RightNeighbor && CurrentTile->RightNeighbor->TileStatus == ETileStatus::ETile_NULLROOM && !AvailableTiles.Contains(CurrentTile->RightNeighbor))
+			{
+				AvailableTiles.Add(CurrentTile->RightNeighbor);
+			}
+			if (CurrentTile->LeftNeighbor && CurrentTile->LeftNeighbor->TileStatus == ETileStatus::ETile_NULLROOM && !AvailableTiles.Contains(CurrentTile->LeftNeighbor))
+			{
+				AvailableTiles.Add(CurrentTile->LeftNeighbor);
+			}
+		}
+	}
+}
 
 TArray <int> ASTileManager::Reshuffle2(TArray <int> ar)
 {

@@ -66,6 +66,16 @@ public:
 
 #pragma endregion
 
+#pragma region Tile Doors
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Doors")
+	void ActivateDoorToPath();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Doors")
+	void ActivateDoorsBranch();
+
+#pragma endregion
+
 #pragma region Tile Path
 
 	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
@@ -84,7 +94,13 @@ public:
 	bool EndOfPath = false;
 
 	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
+	bool EndOfBranchPath = false;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
 	bool ConnectedToPath = false;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Components - Path")
+	FString TileDescription = "";
 
 	UFUNCTION(BlueprintCallable, Category = "Tile Components - Path Debug")
 	void ShadeNull();
