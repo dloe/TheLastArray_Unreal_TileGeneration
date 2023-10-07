@@ -2,7 +2,7 @@
 
 
 #include "SGameplayFunctionLibrary.h"
-#include <TheLastArray_Unreal/Public/SAttributeComponent.h>
+#include <TheLastArray_Unreal/Public/Attributes/SAttributeComponent.h>
 
 bool USGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount)
 {

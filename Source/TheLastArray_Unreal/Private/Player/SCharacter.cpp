@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SCharacter.h"
+#include "Player/SCharacter.h"
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "SInteractionActorComponent.h"
+#include "Interactables/SInteractionActorComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include <TheLastArray_Unreal/Public/SAttributeComponent.h>
-#include "SActionComponent.h"
-#include "SPlayerState.h"
+#include <TheLastArray_Unreal/Public/Attributes/SAttributeComponent.h>
+#include "Actions/SActionComponent.h"
+#include "Player/SPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values

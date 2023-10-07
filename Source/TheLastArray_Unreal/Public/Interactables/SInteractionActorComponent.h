@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "SWorldUserWidget.h"
+#include "Widgets/SWorldUserWidget.h"
 #include "SInteractionActorComponent.generated.h"
 
 class USWorldUwerWidget;

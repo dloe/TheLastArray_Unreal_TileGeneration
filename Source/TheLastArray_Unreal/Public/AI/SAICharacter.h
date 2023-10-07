@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SAttributeComponent.h"
+#include "Attributes/SAttributeComponent.h"
 #include "GameFramework/Character.h"
-#include <SActionComponent.h>
+#include <Actions/SActionComponent.h>
 #include "SAICharacter.generated.h"
 
 class UPawnSensingComponent;

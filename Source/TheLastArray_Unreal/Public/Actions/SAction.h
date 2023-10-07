@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "GameplayTagContainer.h"
-#include "SActionComponent.h"
+#include "Actions/SActionComponent.h"
 #include "SAction.generated.h"
 
 class UWorld;

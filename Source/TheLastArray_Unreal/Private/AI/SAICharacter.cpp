@@ -3,16 +3,16 @@
 
 #include "AI/SAICharacter.h"
 #include "Perception/PawnSensingComponent.h"
-#include "SAttributeComponent.h"
+#include "Attributes/SAttributeComponent.h"
 #include "AI/SAIController.h"
 #include "BrainComponent.h"
-#include "SWorldUserWidget.h"
+#include "Widgets/SWorldUserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "SPlayerState.h"
+#include "Player/SPlayerState.h"
 #include <TheLastArray_Unreal/Public/SGameModeBase.h>
-#include <SActionComponent.h>
+#include <Actions/SActionComponent.h>
 #include <TheLastArray_Unreal/TheLastArray_Unreal.h>
 
 // Sets default values

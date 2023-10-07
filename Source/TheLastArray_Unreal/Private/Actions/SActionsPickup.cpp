@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SActionsPickup.h"
-#include "SActionComponent.h"
+#include "Actions/SActionsPickup.h"
+#include "Actions/SActionComponent.h"
 
 
 ASActionsPickup::ASActionsPickup()

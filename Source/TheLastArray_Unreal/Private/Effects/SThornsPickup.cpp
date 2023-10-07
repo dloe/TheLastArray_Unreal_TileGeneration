@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SThornsPickup.h"
-#include "SActionComponent.h"
+#include "Effects/SThornsPickup.h"
+#include "Actions/SActionComponent.h"
 
 ASThornsPickup::ASThornsPickup()
 {

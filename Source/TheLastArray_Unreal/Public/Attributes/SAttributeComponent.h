@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "SActionEffect.h"
+#include "Actions/SActionEffect.h"
 #include "SAttributeComponent.generated.h"
 
 class USAttributeComponent;

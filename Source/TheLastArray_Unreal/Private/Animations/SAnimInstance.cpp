@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SAnimInstance.h"
+#include "Animations/SAnimInstance.h"
 #include <Runtime/GameplayTags/Classes/GameplayTagContainer.h>
-#include "SActionComponent.h"
+#include "Actions/SActionComponent.h"
 
 void USAnimInstance::NativeInitializeAnimation()
 {

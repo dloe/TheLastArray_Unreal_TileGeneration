@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "SProjectileBase.h"
+#include "Projectiles/SProjectileBase.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "TeleportProjectile.generated.h"

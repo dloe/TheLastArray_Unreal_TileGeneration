@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SAttributeComponent.h"
-#include "SInteractionActorComponent.h"
+#include "Attributes/SAttributeComponent.h"
+#include "Interactables/SInteractionActorComponent.h"
 #include "GameFramework/Character.h"
-#include <SActionComponent.h>
+#include <Actions/SActionComponent.h>
 #include "Particles/ParticleSystemComponent.h"
 #include "SPlayerState.h"
-#include "SActionEffect.h"
+#include "Actions/SActionEffect.h"
 #include "SCharacter.generated.h"
 
 

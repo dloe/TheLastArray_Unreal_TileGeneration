@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SPickupBase.h"
+#include "Pickup/SPickupBase.h"
 #include "SCoinPickup.generated.h"
 
 /**

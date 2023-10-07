@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SActionEffect.h"
+#include "Actions/SActionEffect.h"
 #include "SEffect_Thorns.generated.h"
 
 /**

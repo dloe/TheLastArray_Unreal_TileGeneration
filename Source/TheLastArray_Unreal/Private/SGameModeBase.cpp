@@ -7,15 +7,15 @@
 #include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "Kismet/GameplayStatics.h"
 #include <TheLastArray_Unreal/Public/AI/SAICharacter.h>
-#include <TheLastArray_Unreal/Public/SAttributeComponent.h>
+#include <TheLastArray_Unreal/Public/Attributes/SAttributeComponent.h>
 #include "EngineUtils.h"
 #include "SSaveGame.h"
 #include "GameFramework/GameState.h"
 #include "GameFramework/PlayerState.h"
-#include <TheLastArray_Unreal/Public/SCharacter.h>
+#include <TheLastArray_Unreal/Public/Player/SCharacter.h>
 #include <TheLastArray_Unreal/Public/SGameplayInterface.h>
 #include <Serialization/ObjectAndNameAsStringProxyArchive.h>
-#include "SMonsterData.h"
+#include "ScriptableObjects/SMonsterData.h"
 #include <TheLastArray_Unreal/TheLastArray_Unreal.h>
 #include <Runtime/Engine/Classes/Engine/AssetManager.h>
 //dont think the eenvqueryrunmode enum is needed to include header

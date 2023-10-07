@@ -5,7 +5,7 @@
 #include "AIController.h"
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include <TheLastArray_Unreal/Public/SAttributeComponent.h>
+#include <TheLastArray_Unreal/Public/Attributes/SAttributeComponent.h>
 
 EBTNodeResult::Type UUBTTask_HealAI::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

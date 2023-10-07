@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SEffect_Thorns.h"
+#include "Effects/SEffect_Thorns.h"
 #include "SGameplayFunctionLibrary.h"
-#include "SAttributeComponent.h"
-#include "SMagicProjectile.h"
+#include "Attributes/SAttributeComponent.h"
+#include "Projectiles/SMagicProjectile.h"
 
 USEffect_Thorns::USEffect_Thorns()
 {

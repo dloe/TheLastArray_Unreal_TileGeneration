@@ -1,11 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SInteractionActorComponent.h"
-
+#include "Interactables/SInteractionActorComponent.h"
 #include "SGameplayInterface.h"
 #include "VT/VirtualTextureBuildSettings.h"
-#include "SWorldUserWidget.h"
+#include "Widgets/SWorldUserWidget.h"
 #include <TheLastArray_Unreal/TheLastArray_Unreal.h>
 
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("su.InteractionDebugDraw"), false, TEXT("Enable Debug lines for Interact Command."), ECVF_Cheat);

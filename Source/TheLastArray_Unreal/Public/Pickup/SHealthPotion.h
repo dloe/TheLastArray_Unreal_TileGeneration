@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SPickupBase.h"
+#include "Pickup/SPickupBase.h"
 #include "Components/StaticMeshComponent.h"
 #include "SHealthPotion.generated.h"
 

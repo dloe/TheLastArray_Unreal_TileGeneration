@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SPickupBase.h"
-#include "SAttributeComponent.h"
+#include "Pickup/SPickupBase.h"
+#include "Attributes/SAttributeComponent.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"

@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SCoinPickup.h"
+#include "Pickup/SCoinPickup.h"
 #include "GameFramework/Actor.h"
-#include "SAttributeComponent.h"
-#include "SPlayerState.h"
+#include "Attributes/SAttributeComponent.h"
+#include "Player/SPlayerState.h"
 
 ASCoinPickup::ASCoinPickup()
 {

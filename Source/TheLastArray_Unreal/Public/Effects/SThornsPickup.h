@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SPickupBase.h"
-#include "SActionEffect.h"
+#include "Pickup/SPickupBase.h"
+#include "Actions/SActionEffect.h"
 #include "SThornsPickup.generated.h"
 
 /**

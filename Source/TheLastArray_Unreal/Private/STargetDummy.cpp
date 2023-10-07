@@ -3,7 +3,7 @@
 
 #include "STargetDummy.h"
 
-#include "SAttributeComponent.h"
+#include "Attributes/SAttributeComponent.h"
 
 // Sets default values
 ASTargetDummy::ASTargetDummy()

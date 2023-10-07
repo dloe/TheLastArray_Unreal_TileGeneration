@@ -3,7 +3,7 @@
 #include "AI/USBTService_CheckHealth.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
-#include <TheLastArray_Unreal/Public/SAttributeComponent.h>
+#include <TheLastArray_Unreal/Public/Attributes/SAttributeComponent.h>
 
 
 

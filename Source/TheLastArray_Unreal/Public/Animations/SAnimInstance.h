@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "SActionComponent.h"
+#include "Actions/SActionComponent.h"
 #include "SAnimInstance.generated.h"
 
 /**
