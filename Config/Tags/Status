@@ -1,0 +1,6 @@
+[/Script/GameplayTags.GameplayTagsList]
+GameplayTagList=(Tag="Burning",DevComment="")
+GameplayTagList=(Tag="Parrying",DevComment="")
+GameplayTagList=(Tag="Stunned",DevComment="")
+GameplayTagList=(Tag="Thorns",DevComment="")
+

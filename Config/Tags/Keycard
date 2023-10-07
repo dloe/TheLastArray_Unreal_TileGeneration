@@ -1,0 +1,5 @@
+[/Script/GameplayTags.GameplayTagsList]
+GameplayTagList=(Tag="Blue",DevComment="")
+GameplayTagList=(Tag="Red",DevComment="")
+GameplayTagList=(Tag="Yellow",DevComment="")
+
