@@ -53,9 +53,10 @@ void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
-	SpawnPowerups();
-	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
-
+	if(EnemysCanSpawn) {
+		SpawnPowerups();
+		GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
+	}
 
 }
 

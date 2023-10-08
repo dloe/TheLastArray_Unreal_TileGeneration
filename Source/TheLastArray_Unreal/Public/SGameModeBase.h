@@ -49,6 +49,8 @@ public:
 	//amount of credits awarded to killer of this unit
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float KillReward;
+
+	
 };
 
 
@@ -69,6 +71,10 @@ protected:
 	//all available monsters
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UDataTable* MonsterTable;
+
+	//enable enemy spawn events
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool EnemysCanSpawn;
 
 	//ai
 	//UPROPERTY(EditDefaultsOnly, Category = "AI")
