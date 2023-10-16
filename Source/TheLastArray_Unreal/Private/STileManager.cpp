@@ -2,6 +2,7 @@
 
 
 #include "STileManager.h"
+#include "LocalLevel.h"
 #include <Engine/World.h>
 #include <string>
 #include <Math/UnrealMathUtility.h>
@@ -137,13 +138,13 @@ void ASTileManager::ChooseStartEndRooms()
 
 	int startX = 0, startY = 0;
 	//will pick a random side and random tile on side to start
-	int side = GameStream.RandRange(0, 3);
+	StartRoomSide = GameStream.RandRange(0, 3);
 	if (DebugPrints)
-		UE_LOG(LogTemp, Log, TEXT("Side Picked: %f"), side);
+		UE_LOG(LogTemp, Log, TEXT("Side Picked: %f"), StartRoomSide);
 
 
 
-	switch (side)
+	switch (StartRoomSide)
 	{
 		case 0:
 		//starting
@@ -749,6 +750,53 @@ void ASTileManager::CreateSpawnRoom()
 	if (DebugPrints)
 		UE_LOG(LogTemp, Log, TEXT("Creating Spawn Room..."));
 
+	FVector SpawnPos;
+	//ASTile* tile = nullptr;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	switch (StartRoomSide)
+	{
+		case 0:
+			//DOWN
+			SpawnPos = FVector(StartingTile->GetActorLocation().X, StartingTile->GetActorLocation().Y, StartingTile->GetActorLocation().Z - (StartingTile->TileLength / 2));
+			tile = GetWorld()->SpawnActor<ASTile>(TileBase, SpawnPos, StartingTile->GetActorRotation(), SpawnParams);
+			PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetStartingTile, SpawnPos, StartingTile->GetActorRotation(), SpawnParams);
+			StartingTile->RightNeighbor = tile;
+			tile->LeftNeighbor = StartingTile;
+			PlayerSpawnPresentTile->SetActorRotation(FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, 180.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z));
+			break;
+		case 1:
+			break;
+			//LEFT
+			SpawnPos = FVector(StartingTile->GetActorLocation().X + (StartingTile->TileLength / 2), StartingTile->GetActorLocation().Y, StartingTile->GetActorLocation().Z);
+			tile = GetWorld()->SpawnActor<ASTile>(TileBase, SpawnPos, StartingTile->GetActorRotation(), SpawnParams);
+			PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetStartingTile, SpawnPos, StartingTile->GetActorRotation(), SpawnParams);
+			StartingTile->UpNeighbor = tile;
+			tile->DownNeighbor = StartingTile;
+			PlayerSpawnPresentTile->SetActorRotation(FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, 90.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z));
+		case 2:
+			//UP
+			SpawnPos = FVector(StartingTile->GetActorLocation().X, StartingTile->GetActorLocation().Y, StartingTile->GetActorLocation().Z + (StartingTile->TileLength / 2));
+			tile = GetWorld()->SpawnActor<ASTile>(TileBase, SpawnPos, StartingTile->GetActorRotation(), SpawnParams);
+			PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetStartingTile, SpawnPos, StartingTile->GetActorRotation(), SpawnParams);
+			StartingTile->LeftNeighbor = tile;
+			tile->RightNeighbor = StartingTile;
+			//PlayerSpawnPresentTile->SetActorRotation(FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, -180.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z));
+			break;
+		case 3:
+			//RIGHT
+			SpawnPos = FVector(StartingTile->GetActorLocation().X - (StartingTile->TileLength / 2), StartingTile->GetActorLocation().Y, StartingTile->GetActorLocation().Z);
+			tile = GetWorld()->SpawnActor<ASTile>(TileBase, SpawnPos, StartingTile->GetActorRotation(), SpawnParams);
+			PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetStartingTile, SpawnPos, StartingTile->GetActorRotation(), SpawnParams);
+			StartingTile->DownNeighbor = tile;
+			tile->UpNeighbor = StartingTile;
+			//FRotator NewRotation = //FMath::RInterpConstantTo(PlayerSpawnPresentTile->GetActorRotation(), FRotator(0.0f, -90.0f, 0.f), GetWorld()->GetDeltaSeconds(), );
+			PlayerSpawnPresentTile->SetActorRotation(FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, -90.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z));
+
+			break;
+	}
 
 }
 

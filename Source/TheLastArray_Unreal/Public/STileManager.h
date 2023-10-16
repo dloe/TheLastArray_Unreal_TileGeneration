@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "STile.h"
+#include "LocalLevel.h"
 #include "STileManager.generated.h"
 
 
@@ -70,6 +71,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	int LevelWidth = 5;
 
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ALocalLevel* MyLocalLevel;
+
 	//are doors to be used in levels, some might not need them
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	bool DoorsActive = false;
@@ -122,6 +126,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	int FillerRooms = 0;
 
+
+	
 #pragma endregion
 
 protected:
@@ -132,9 +138,13 @@ protected:
 #pragma region Tile Generation
 	//2D array to hold all tiles
 	TArray <FMultiTileStruct*> Grid2DArray;
-	//TArray<TArray<AActor*>> test;
 
-	
+	//Spawned in from LocalLevel
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* PlayerSpawnPresentTile;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* tile;
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void TileGeneration();
@@ -181,6 +191,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	TArray <int> Reshuffle2(TArray <int> ar);
 
+
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	int StartRoomSide;
 #pragma endregion
 
 
