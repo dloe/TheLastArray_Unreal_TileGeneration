@@ -118,6 +118,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	TArray<ASTile*>	AvailableTiles;
 
+	//single rooms
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	int FillerRooms = 0;
+
 #pragma endregion
 
 protected:
@@ -161,6 +165,12 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void AddRandomRooms();
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void AddSingleRooms();
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void CreateSpawnRoom();
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void CheckBranchTile(ASTile* TileToAdd, TArray<ASTile*> CurrentPath, int Length);

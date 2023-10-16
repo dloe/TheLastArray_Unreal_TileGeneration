@@ -416,7 +416,7 @@ void ASTileManager::GeneratePath()
 		//draw lines through path
 		for (int Index = 0; Index < LevelPath.Num() - 1; Index++)
 		{
-			DrawDebugLine(GetWorld(), LevelPath[Index]->GetActorLocation(), LevelPath[Index + 1]->GetActorLocation(), FColor::Blue, SDPG_World, 20.0f, 100);
+			DrawDebugLine(GetWorld(), LevelPath[Index]->GetActorLocation(), LevelPath[Index + 1]->GetActorLocation(), FColor::Blue, SDPG_World, 20.0f, 150);
 			//GetWorld()->LineBatcher->DrawLine(LevelPath[Index]->GetActorLocation(), LevelPath[Index + 1]->GetActorLocation(), FColor::Blue, SDPG_World, 10.0f, 100);
 		}
 	}
@@ -424,10 +424,13 @@ void ASTileManager::GeneratePath()
 	if (DebugPrints)
 		UE_LOG(LogTemp, Log, TEXT("=================== Finished Path - Adding Random Rooms =============================="));
 
+	AddRandomRooms();
 	
 
 	if (DebugPrints)
 		UE_LOG(LogTemp, Log, TEXT("=================== Finished Random Rooms - Adding Spawn Room =============================="));
+
+	CreateSpawnRoom();
 
 	//if (DebugPrints)
 	//	UE_LOG(LogTemp, Log, TEXT("=================== Finished Spawn Room - Adding Secret Room =============================="));
@@ -612,10 +615,11 @@ void ASTileManager::AddRandomRooms()
 
 	for (int Branch = 0; Branch < BranchCount; Branch++)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Making Branch: %d"), Branch);
+		//UE_LOG(LogTemp, Log, TEXT("Making Branch: %d"), Branch);
 
 		//for now using length of level, might change this later, not sure how else but not a super important detail
-		int BranchLength = GameStream.RandRange(1, LevelWidth + 1);
+		int BranchLength = GameStream.RandRange(1, LevelWidth);
+		UE_LOG(LogTemp, Log, TEXT("Making Branch: %d with length %d"), Branch, BranchLength);
 
 		ASTile* StartingBranchTile = AvailableTiles[GameStream.RandRange(0, AvailableTiles.Num() - 1)];
 		TArray<ASTile*>	BranchArray;
@@ -672,10 +676,78 @@ void ASTileManager::AddRandomRooms()
 		//once we make branch, we go back through and remake the available tile spots
 		MakeAvailableTiles();
 
+		//Debug draw branch
+		if (DebugPrints) {
+			//draw lines through path
+			for (int Index = 0; Index < BranchArray.Num() - 1; Index++)
+			{
+				DrawDebugLine(GetWorld(), BranchArray[Index]->GetActorLocation(), BranchArray[Index + 1]->GetActorLocation(), FColor::Emerald, SDPG_World, 20.0f, 150);
+			}
+		}
 	}
 
+	AddSingleRooms();
+}
+
+/// <summary>
+/// Dylan Loe
+/// 
+/// - Implementing single chosen rooms to available tiles
+/// </summary>
+void ASTileManager::AddSingleRooms()
+{
 	if (DebugPrints)
 		UE_LOG(LogTemp, Log, TEXT("Adding Single Rooms..."));
+	//when we add a room, remove it from AvailableTiles, add to AllActiveTiles
+
+	//default to half the rooms left over
+	FillerRooms = GameStream.RandRange(1, (LevelWidth - AvailableTiles.Num() - 1) - ((LevelHeight - AvailableTiles.Num() - 1)/4));
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("Total Random Room: %d"), FillerRooms);
+
+	for (int STileCount = 0; STileCount < FillerRooms; STileCount++)
+	{
+		if (LevelWidth - AllActiveTiles.Num() >= LevelHeight / (LevelWidth * 2))
+		{
+			ASTile* Current = AvailableTiles[GameStream.RandRange(0, AvailableTiles.Num() - 1)];
+			UE_LOG(LogTemp, Log, TEXT("Room selected: %d:%d"), Current->XIndex, Current->ZIndex);
+			if (Current->TileStatus == ETileStatus::ETile_NULLROOM)
+			{
+				Current->ShadeActiveRoom();
+				AvailableTiles.Remove(Current);
+				AllActiveTiles.AddUnique(Current);
+				Current->TileDescription = "Random Single Room";
+
+				//Activate Doors
+				//Remake new available list (with this currents neighbors now added
+				//TO DO - Size small: Optimize the remake so that we only add the new tiles rooms instead of having to go through entire list
+
+				if (DoorsActive)
+				{
+					Current->ActivateDoorsRandom();
+				}
+				MakeAvailableTiles();
+			}
+		} 
+		else
+		{
+			//stop adding random tiles
+			return;
+		}
+	}
+
+
+}
+
+/// <summary>
+/// Dylan Loe
+/// 
+/// - Add spawn room, connected to  the start room (this will be outside of the grid
+/// </summary>
+void ASTileManager::CreateSpawnRoom()
+{
+	if (DebugPrints)
+		UE_LOG(LogTemp, Log, TEXT("Creating Spawn Room..."));
 
 
 }
@@ -685,11 +757,13 @@ void ASTileManager::CheckBranchTile(ASTile* TileToAdd, TArray<ASTile*> CurrentPa
 	if (Length > 0)
 	{
 		CurrentPath.Add(TileToAdd);
+		//if (DebugPrints)
+			//UE_LOG(LogTemp, Log, TEXT("Adding Single Rooms..."));
 		TileToAdd->ShadeActiveRoom();
 		TileToAdd->TileDescription = "";
 
-		if ((TileToAdd->RightNeighbor || TileToAdd->RightNeighbor->TileStatus != ETileStatus::ETile_NULLROOM) && (TileToAdd->LeftNeighbor || TileToAdd->LeftNeighbor->TileStatus != ETileStatus::ETile_NULLROOM)
-		&& (TileToAdd->UpNeighbor || TileToAdd->UpNeighbor->TileStatus != ETileStatus::ETile_NULLROOM) && (TileToAdd->DownNeighbor || TileToAdd->DownNeighbor->TileStatus != ETileStatus::ETile_NULLROOM))
+		if ((!TileToAdd->RightNeighbor || TileToAdd->RightNeighbor->TileStatus != ETileStatus::ETile_NULLROOM) && (!TileToAdd->LeftNeighbor || TileToAdd->LeftNeighbor->TileStatus != ETileStatus::ETile_NULLROOM)
+		&& (!TileToAdd->UpNeighbor || TileToAdd->UpNeighbor->TileStatus != ETileStatus::ETile_NULLROOM) && (!TileToAdd->DownNeighbor || TileToAdd->DownNeighbor->TileStatus != ETileStatus::ETile_NULLROOM))
 		{
 			//theres no where to go, lets just end the branch here to save time
 			Length = 0;

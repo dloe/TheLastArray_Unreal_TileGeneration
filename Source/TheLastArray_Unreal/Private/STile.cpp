@@ -46,6 +46,11 @@ void ASTile::ActivateDoorsBranch()
 
 }
 
+void ASTile::ActivateDoorsRandom()
+{
+	
+}
+
 void ASTile::ShadeNull()
 {
 	DrawDebugSphere(GetWorld(), this->GetActorLocation(), 200.0f, 20, FColor::Red, false, 100);

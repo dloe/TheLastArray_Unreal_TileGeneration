@@ -74,6 +74,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tile Components - Doors")
 	void ActivateDoorsBranch();
 
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Doors")
+	void ActivateDoorsRandom();
+
 #pragma endregion
 
 #pragma region Tile Path
