@@ -36,6 +36,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Configuration")
 	TSubclassOf<ASTile> PresetStartingTile;
 
+
+	UPROPERTY(EditAnywhere, Category = "Level")
+	TSubclassOf<AActor> PlayerStartRef;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

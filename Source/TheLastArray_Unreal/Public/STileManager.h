@@ -90,6 +90,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	FName DoorSubFolderName;
 
+	//folder name for where doors are placed when spawned
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	FName TileGenRootFolder;
+
 	//starting tile reference - TO DO: PROTECT THIS LATER
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	ASTile* StartingTile;
@@ -130,6 +134,7 @@ public:
 	
 #pragma endregion
 
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -144,7 +149,7 @@ protected:
 	ASTile* PlayerSpawnPresentTile;
 
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	ASTile* tile;
+	ASTile* PlayerStartingTileBase;
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void TileGeneration();
@@ -156,7 +161,7 @@ protected:
 	void Create2DTileArray();
 
 	UFUNCTION(Category = "ArrayCreation")
-	void LinkTile(ASTile* Tile, FMultiTileStruct Col);
+	void LinkTile(ASTile* ThisTile, FMultiTileStruct Col);
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void ChooseStartEndRooms();
@@ -191,9 +196,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	TArray <int> Reshuffle2(TArray <int> ar);
 
-
+	//For debug if we want to hard code a specific side to test, we set to 0 -3 otherwise it will get overridden
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	int StartRoomSide;
+	int StartRoomSide = -1;
 #pragma endregion
 
 
