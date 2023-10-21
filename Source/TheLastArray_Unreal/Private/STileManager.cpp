@@ -803,6 +803,9 @@ void ASTileManager::CreateSpawnRoom()
 
 			break;
 	}
+
+	//MyLocalLevel->PlayerStartRef
+
 	PlayerStartingTileBase->SetActorLabel("StartingTile_Base");
 	PlayerSpawnPresentTile->SetActorLabel("StartingTile_Populate");
 	PlayerStartingTileBase->SetOwner(PlayerSpawnPresentTile);
