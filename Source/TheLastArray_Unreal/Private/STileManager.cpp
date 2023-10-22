@@ -434,8 +434,14 @@ void ASTileManager::GeneratePath()
 
 	CreateSpawnRoom();
 
-	//if (DebugPrints)
-	//	UE_LOG(LogTemp, Log, TEXT("=================== Finished Spawn Room - Adding Secret Room =============================="));
+
+	if(MyLocalLevel->CurrentLevelTier >= ELevelTier::ELevel_2) {
+		if (DebugPrints)
+			UE_LOG(LogTemp, Log, TEXT("=================== Finished Spawn Room - Adding Secret Room =============================="));
+		CreateSecretRoom();
+
+	}
+
 
 	//if (DebugPrints)
 	//	UE_LOG(LogTemp, Log, TEXT("=================== Finished Secret Room - Implementing Final Tile Setup =============================="));
@@ -804,15 +810,167 @@ void ASTileManager::CreateSpawnRoom()
 			break;
 	}
 
-	//MyLocalLevel->PlayerStartRef
-
 	PlayerStartingTileBase->SetActorLabel("StartingTile_Base");
 	PlayerSpawnPresentTile->SetActorLabel("StartingTile_Populate");
-	PlayerStartingTileBase->SetOwner(PlayerSpawnPresentTile);
+	//PlayerStartingTileBase->SetOwner(PlayerSpawnPresentTile);
 #if WITH_EDITOR
 	PlayerStartingTileBase->SetFolderPath(TileGenRootFolder);
 	PlayerSpawnPresentTile->SetFolderPath(TileGenRootFolder);
 #endif
+	//Set the Preset ref to the SpawnPresetTile obj
+	PlayerStartingTileBase->PresetTile = PlayerSpawnPresentTile;
+
+	//Spawn stats from StartingTile to PlayerStartingTileBase, then we will reassign the StartingTile
+	StartingTile->ShadePath();
+	LevelPath.Insert(PlayerStartingTileBase, 0);
+	AllActiveTiles.Insert(PlayerStartingTileBase, 0);
+	PlayerStartingTileBase->ShadeStartingRoom();
+	StartingTile = PlayerStartingTileBase;
+	
+
+}
+
+/// <summary>
+/// Dylan Log
+/// 
+/// - Compose list of all null neighbors of all active tiles (excluding start and boss rooms)
+/// - 
+/// </summary>
+void ASTileManager::CreateSecretRoom()
+{
+	TArray<ASTile*> outskirtsCheck;
+	for (int tileCount = 0; tileCount < AllActiveTiles.Num(); tileCount++)
+	{
+		ASTile* currentTile = AllActiveTiles[tileCount];
+		
+		FTileInfoStruct currentInfo;
+		currentInfo.tile = currentTile;
+
+		if (currentTile->TileStatus != ETileStatus::ETile_BOSSROOM && currentTile->TileStatus != ETileStatus::ETile_STARTINGROOM)
+		{
+			//if up neighbor is a null ref
+			if (!currentTile->UpNeighbor)
+			{
+				currentInfo.n.Add(1);
+			}
+			else if (currentTile->UpNeighbor && currentTile->UpNeighbor->TileStatus == ETileStatus::ETile_NULLROOM &&
+				currentTile->UpNeighbor->TileStatus != ETileStatus::ETile_BOSSROOM && currentTile->UpNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM)
+			{
+				currentInfo.n.Add(1);
+			}
+
+			//check left neighbor
+			if (!currentTile->LeftNeighbor)
+			{
+				currentInfo.n.Add(3);
+			}
+			else if (currentTile->LeftNeighbor && currentTile->LeftNeighbor->TileStatus == ETileStatus::ETile_NULLROOM &&
+				currentTile->LeftNeighbor->TileStatus != ETileStatus::ETile_BOSSROOM && currentTile->LeftNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM)
+			{
+				currentInfo.n.Add(3);
+			}
+
+			if (!currentTile->RightNeighbor)
+			{
+				currentInfo.n.Add(4);
+			}
+			else if (currentTile->RightNeighbor && currentTile->RightNeighbor->TileStatus == ETileStatus::ETile_NULLROOM &&
+				currentTile->RightNeighbor->TileStatus != ETileStatus::ETile_BOSSROOM && currentTile->RightNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM)
+			{
+				currentInfo.n.Add(4);
+			}
+
+			if (!currentTile->DownNeighbor)
+			{
+				currentInfo.n.Add(2);
+			}
+			else if (currentTile->DownNeighbor && currentTile->DownNeighbor->TileStatus == ETileStatus::ETile_NULLROOM &&
+				currentTile->DownNeighbor->TileStatus != ETileStatus::ETile_BOSSROOM && currentTile->DownNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM)
+			{
+				currentInfo.n.Add(2);
+			}
+
+			//add our info struct to list
+			if (currentInfo.n.Num() != 0 && !outskirtsCheck.Contains(currentInfo.tile)) //OutskirtTiles.Contains(currentInfo))
+			{
+				OutskirtTiles.Add(currentInfo);
+				outskirtsCheck.Add(currentInfo.tile);
+			}
+		}
+	}
+
+	//now randomly pick a tile to put our secret room at (this tiles neighbor will be the secret room)
+	int tileNum = GameStream.RandRange(0, OutskirtTiles.Num() - 1);
+
+	FTileInfoStruct selected = OutskirtTiles[tileNum];
+	ASTile* test = outskirtsCheck[tileNum];
+	choosen = outskirtsCheck[tileNum];
+
+	//reshuffle our n value
+	selected.n = Reshuffle2(selected.n);
+
+	int loc = GameStream.RandRange(0, selected.n.Num() - 1);
+
+	//we now have our room we selected and the neighbor in which we are using for our secret room
+	FVector SpawnPos;
+	FRotator SpawnRot;
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	//UE_LOG(LogTemp, Log, TEXT("Picked - %d - side of [%d,%d]"), selected.n[loc], selected.tile->XIndex, selected.tile->ZIndex);
+	//UE_LOG(LogTemp, Log, TEXT("Selected:  x= %d, y = %d], z = %d"), test->GetActorLocation().X, test->GetActorLocation().Y, test->GetActorLocation().Z);
+
+	//TO DO: werid but with center of tile being at the top, causing a 240 offset. Will need to investigate later
+	switch (selected.n[loc])
+	{
+		case 1:
+			//up
+			//UE_LOG(LogTemp, Log, TEXT("up neighbor"));
+			//FVector(StartingTile->GetActorLocation().X, StartingTile->GetActorLocation().Y + (StartingTile->TileLength), StartingTile->GetActorLocation().Z);
+			SpawnPos = FVector(selected.tile->GetActorLocation().X, selected.tile->GetActorLocation().Y + (StartingTile->TileLength), selected.tile->GetActorLocation().Z + 240);
+			//SpawnRot = FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, -90.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z);
+			SecretRoom = PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetSecretRoomTile, SpawnPos, SpawnRot, SpawnParams);
+			SecretRoom->DownNeighbor = selected.tile;
+			selected.tile->UpNeighbor = SecretRoom;
+			break;
+		case 2:
+			//down
+			//UE_LOG(LogTemp, Log, TEXT("down neighbor"));
+			SpawnPos = FVector(selected.tile->GetActorLocation().X, selected.tile->GetActorLocation().Y - (StartingTile->TileLength), selected.tile->GetActorLocation().Z + 240);
+			SpawnRot = FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, 180.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z);
+			SecretRoom = PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetSecretRoomTile, SpawnPos, SpawnRot, SpawnParams);
+			SecretRoom->UpNeighbor = selected.tile;
+			selected.tile->DownNeighbor = SecretRoom;
+			break;
+		case 3:
+			//left
+			//UE_LOG(LogTemp, Log, TEXT("left neighbor"));
+			SpawnPos = FVector(selected.tile->GetActorLocation().X - (selected.tile->TileLength), selected.tile->GetActorLocation().Y, selected.tile->GetActorLocation().Z + 240);
+			SpawnRot = FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, 90.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z);
+			SecretRoom = PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetSecretRoomTile, SpawnPos, SpawnRot, SpawnParams);
+			SecretRoom->RightNeighbor = selected.tile;
+			selected.tile->LeftNeighbor = SecretRoom;
+			break;
+		case 4:
+			//right
+			//UE_LOG(LogTemp, Log, TEXT("right neighbor"));
+			SpawnPos = FVector(selected.tile->GetActorLocation().X + (selected.tile->TileLength), selected.tile->GetActorLocation().Y, selected.tile->GetActorLocation().Z + 240);
+			SpawnRot = FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, -90.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z);
+			SecretRoom = PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetSecretRoomTile, SpawnPos, SpawnRot, SpawnParams);
+			SecretRoom->RightNeighbor = selected.tile;
+			selected.tile->LeftNeighbor = SecretRoom;
+			break;
+	}
+	// TO DO: this will need to be updated to a specific Secrete Room BP set in LocalLevel
+	
+	SecretRoom->SetActorLabel("SecretRoom");
+	//SecretRoom->SetOwner(this);
+#if WITH_EDITOR
+	SecretRoom->SetFolderPath(TileGenRootFolder);
+	SecretRoom->ShadeSecretRoom();
+#endif
+
+	//set neighbors
+
 
 }
 

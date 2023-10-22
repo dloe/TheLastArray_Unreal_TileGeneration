@@ -29,6 +29,21 @@ public:
 
 };
 
+USTRUCT()
+struct FTileInfoStruct
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	ASTile* tile;
+	UPROPERTY()
+	TArray<int> n;
+
+
+};
+
 UCLASS()
 class THELASTARRAY_UNREAL_API ASTileManager : public AActor
 {
@@ -98,9 +113,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	ASTile* StartingTile;
 
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* choosen;
+
 	//starting tile reference - TO DO: PROTECT THIS LATER
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	ASTile* EndTile;
+
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* SecretRoom;
 
 	//list of possible starting tiles - DO DO: PROTECT THIS LATER
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
@@ -151,6 +172,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	ASTile* PlayerStartingTileBase;
 
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<FTileInfoStruct> OutskirtTiles;
+
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void TileGeneration();
 
@@ -186,6 +210,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void CreateSpawnRoom();
+
+	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
+	void CreateSecretRoom();
 
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void CheckBranchTile(ASTile* TileToAdd, TArray<ASTile*> CurrentPath, int Length);

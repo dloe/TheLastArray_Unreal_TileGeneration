@@ -7,6 +7,16 @@
 #include "STile.h"
 #include "LocalLevel.generated.h"
 
+UENUM(BlueprintType)
+	enum class ELevelTier : uint8 {
+		ELevel_Null UMETA(DisplayName = "NullLevelTier"),
+		ELevel_1 UMETA(DisplayName = "Level1"),
+		ELevel_2  UMETA(DisplayName = "Level2"),
+		ELevel_3     UMETA(DisplayName = "Level3"),
+		ELevel_4 UMETA(DisplayName = "Level4"),
+		ELevel_Train UMETA(DisplayName = "TrainLevel")
+	};
+
 UCLASS()
 class THELASTARRAY_UNREAL_API ALocalLevel : public AActor
 {
@@ -36,9 +46,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Configuration")
 	TSubclassOf<ASTile> PresetStartingTile;
 
+	UPROPERTY(EditAnywhere, Category = "Tile Configuration")
+	TSubclassOf<ASTile> PresetSecretRoomTile;
 
-	UPROPERTY(EditAnywhere, Category = "Level")
-	TSubclassOf<AActor> PlayerStartRef;
+	UPROPERTY(EditAnywhere, Category = "Tile Stats")
+	ELevelTier CurrentLevelTier;
 
 protected:
 	// Called when the game starts or when spawned

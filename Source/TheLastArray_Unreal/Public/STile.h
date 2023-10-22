@@ -59,6 +59,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Stats")
 	int32 ZIndex;
 
+	// Contains a reference to the present used for overall Tile layout
+	UPROPERTY(EditAnywhere, Category = "Tile Stats")
+	AActor* PresetTile;
 	
 
 	UPROPERTY(EditAnywhere, Category = "Tile Stats")

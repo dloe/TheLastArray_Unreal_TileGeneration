@@ -34,8 +34,8 @@ void ASTile::SetUpDoorTransforms_Implementation()
 }
 
 
-#pragma region Labeling Rooms
 
+#pragma region Door Setup
 void ASTile::ActivateDoorToPath()
 {
 
@@ -50,6 +50,9 @@ void ASTile::ActivateDoorsRandom()
 {
 	
 }
+#pragma endregion
+
+#pragma region Labeling Rooms
 
 void ASTile::ShadeNull()
 {
