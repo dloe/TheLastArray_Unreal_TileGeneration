@@ -220,6 +220,12 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	void MakeAvailableTiles();
 
+	UFUNCTION(BlueprintCallable, Category = "Door Setup")
+	void ActivateAllDoors();
+
+	UFUNCTION(BlueprintCallable, Category = "Door Setup")
+	void DeactiveInactiveRooms();
+
 	UFUNCTION(BlueprintCallable, Category = "ArrayCreation")
 	TArray <int> Reshuffle2(TArray <int> ar);
 

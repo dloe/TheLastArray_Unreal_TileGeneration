@@ -49,6 +49,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* DoorsRoot;
 
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Walls")
+	void ActivateWalls();
+
 #pragma region Tile Stats
 	UPROPERTY(EditDefaultsOnly, Category = "Tile Stats")
 	float TileLength;
@@ -79,6 +82,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Tile Components - Doors")
 	void ActivateDoorsRandom();
+
+	UFUNCTION(BlueprintCallable, Category = "Tile Components - Doors")
+	void SyncDoors();
 
 #pragma endregion
 

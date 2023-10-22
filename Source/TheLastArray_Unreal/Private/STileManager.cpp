@@ -443,8 +443,16 @@ void ASTileManager::GeneratePath()
 	}
 
 
+	if(DoorsActive){
+		if (DebugPrints)
+			UE_LOG(LogTemp, Log, TEXT("=================== Finished Secret Room - Activating All Doors =============================="));
+
+	}
+
+
+
 	//if (DebugPrints)
-	//	UE_LOG(LogTemp, Log, TEXT("=================== Finished Secret Room - Implementing Final Tile Setup =============================="));
+	//	UE_LOG(LogTemp, Log, TEXT("=================== Finished All Doors - Implementing Final Tile Setup =============================="));
 
 
 	//if (DebugPrints)
@@ -969,8 +977,8 @@ void ASTileManager::CreateSecretRoom()
 	SecretRoom->ShadeSecretRoom();
 #endif
 
-	//set neighbors
-
+	//ACTIVATE WALLS
+	SecretRoom->ActivateWalls();
 
 }
 
@@ -1080,6 +1088,34 @@ void ASTileManager::MakeAvailableTiles()
 			}
 		}
 	}
+}
+
+/// <summary>
+/// Dylan Loe
+/// 
+/// - Activating all doors, on main path
+/// 
+/// </summary>
+void ASTileManager::ActivateAllDoors()
+{
+	//for(int pathCount)
+
+	for(int count = 0; count < LevelPath.Num(); count++)
+	{
+		LevelPath[count]->ActivateDoorToPath();
+	}
+	DeactiveInactiveRooms();
+
+	for(int count2 = 0; count2 < AllActiveTiles.Num(); count2++)
+	{
+		AllActiveTiles[count2]->SyncDoors();
+	}
+
+}
+
+void ASTileManager::DeactiveInactiveRooms()
+{
+	
 }
 
 TArray <int> ASTileManager::Reshuffle2(TArray <int> ar)

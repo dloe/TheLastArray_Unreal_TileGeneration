@@ -34,6 +34,11 @@ void ASTile::SetUpDoorTransforms_Implementation()
 }
 
 
+//if neighbor is null, add a wall - specifically for tiles next to null spaces
+void ASTile::ActivateWalls()
+{
+	
+}
 
 #pragma region Door Setup
 void ASTile::ActivateDoorToPath()
@@ -50,6 +55,12 @@ void ASTile::ActivateDoorsRandom()
 {
 	
 }
+
+void ASTile::SyncDoors()
+{
+	
+}
+
 #pragma endregion
 
 #pragma region Labeling Rooms
