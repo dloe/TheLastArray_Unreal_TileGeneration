@@ -52,7 +52,7 @@ void ASTileManager::BeginPlay()
 /// <summary>
 /// Dylan Loe
 /// 
-/// - Create Tile map structure and run procedure to create gameplay path and populate the map
+/// - Create Tile map structure and run procedure to create game play path and populate the map
 /// </summary>
 void ASTileManager::TileGeneration()
 {
@@ -79,11 +79,9 @@ void ASTileManager::Create2DTileArray()
 		
 	for (int32 XIndex = 0; XIndex < LevelWidth; XIndex++)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Column Number: %f"), XIndex);
 		//for each row, make each column
 		FMultiTileStruct* Col = new FMultiTileStruct();
 
-		//const FTransform SpawnTM = FTransform(this->GetActorRotation(), this->GetActorLocation());
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -91,12 +89,8 @@ void ASTileManager::Create2DTileArray()
 		for (int32 ZIndex = 0; ZIndex < LevelHeight; ZIndex++)
 		{
 			//spawn in a Tile
-			//UE_LOG(LogTemp, Log, TEXT("--Tile: %f, %f"), XIndex, ZIndex);
 			FString TileName = "Tile_Row" + FString::FromInt(XIndex) + "_Col" + FString::FromInt(ZIndex);
-			//if (DebugPrints)
-				//UE_LOG(LogTemp, Log, TEXT("--Tile: %s"), *TileName);
-			//UE_LOG(LogTemp, Log, TEXT("--Tile: %f, %f"), XIndex, ZIndex);
-			//FVector NewLocal = FVector((this->GetActorLocation().X + (T->TileLength* 100 * XIndex)), (this->GetActorLocation().Z + (T->TileLength * 100 * ZIndex)), this->GetActorLocation().Y);
+
 			ASTile* T = GetWorld()->SpawnActor<ASTile>(TileBase, FVector((this->GetActorLocation().X + (500 * XIndex)), (this->GetActorLocation().Y + (5 * 100 * ZIndex)), this->GetActorLocation().Z), this->GetActorRotation(), SpawnParams);
 			T->SetActorLabel(TileName);
 			T->SetOwner(this);
@@ -109,7 +103,7 @@ void ASTileManager::Create2DTileArray()
 
 			//add tile to array
 			Col->TileColumn.Add(T);
-			//T->SetUpDoorTransforms();
+			//SetUpDoorTransforms will eventually be implemented here
 			LinkTile(T, *Col);
 			T->ShadeNull();
 		}
@@ -126,7 +120,8 @@ void ASTileManager::Create2DTileArray()
 /// 
 /// Choosing the start and end room
 /// 
-/// TO DO: Do i really need to pick the end room?
+/// - First run through start room logic, our beginning must be on a random side on the outskirts of the map,
+/// - end room location must in turn be opposite and follow criteria to maintain it having a certain distance of possible path from start room
 /// 
 /// </summary>
 void ASTileManager::ChooseStartEndRooms()
@@ -141,22 +136,19 @@ void ASTileManager::ChooseStartEndRooms()
 	if (DebugPrints)
 		UE_LOG(LogTemp, Log, TEXT("Side Picked: %d"), StartRoomSide);
 
-
-
 	switch (StartRoomSide)
 	{
 		case 0:
-		//starting
+			//starting
 			startY = 0;
 			startX = GameStream.RandRange(0, LevelHeight - 1);
-			//UE_LOG(LogTemp, Log, TEXT("num Picked: %d"), startX);
 			//DOWN;
 
-		//ending possible 
-		//opposite of startX (0) would be LevelWidth - 1
-		//for choosing the end tile, we will pick the opposite 2 rows/columns
-		//must be a distance of height/2 and/or column/2 to be added to a list to be randomly picked as end room
-		//cant pick tiles that are on the same row or column (no straight shots)
+			//ending possible 
+			//opposite of startX (0) would be LevelWidth - 1
+			//for choosing the end tile, we will pick the opposite 2 rows/columns
+			//must be a distance of height/2 and/or column/2 to be added to a list to be randomly picked as end room
+			//cant pick tiles that are on the same row or column (no straight shots)
 		
 			for(int index2 = 0; index2 < (LevelWidth - 1)/2; index2++) {
 			//take every tile less than startY
@@ -175,23 +167,20 @@ void ASTileManager::ChooseStartEndRooms()
 				}
 			}
 
-			//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
 			if(startX > (LevelWidth - 1)/2) { //more than half AFTER startX
 				for (int extra = 0; extra < (startX)-((LevelHeight) / 2); extra++) {
 					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index3, extra);
 						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index3]->TileColumn[extra]);
 						Grid2DArray[LevelHeight - 1 - index3]->TileColumn[extra]->ShadeTestRoom();
 					}
 				}
 			}
-			//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
+
 			if (startX < ((LevelWidth - 1)/2)) { //more than after BEFORE startX
 				for (int extra = 0; extra < (LevelHeight - startX - 1) - ((LevelHeight) / 2); extra++) {
 					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index4, LevelWidth - 1 - extra);
 						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1 - extra]);
 						Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1 - extra]->ShadeTestRoom();
 					}
@@ -209,7 +198,6 @@ void ASTileManager::ChooseStartEndRooms()
 				//take every tile less than startY
 				for (int index = 0; index < startY; index++)
 				{
-					//ASTile* Possible = Grid2DArray[LevelWidth - 1]->TileColumn[index];
 					PossibleStartingTiles.Add(Grid2DArray[index]->TileColumn[LevelHeight - 1 - index2]);
 					Grid2DArray[index]->TileColumn[LevelHeight - 1 - index2]->ShadeTestRoom();
 				}
@@ -222,26 +210,20 @@ void ASTileManager::ChooseStartEndRooms()
 				}
 			}
 
-
-			//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d < %d"), startY, (LevelHeight - 1) / 2);
 			if (startY > (LevelHeight - 1) / 2) { //more than half BEFORE startX
 				//UE_LOG(LogTemp, Log, TEXT("Check: %d"), (startY)-((LevelWidth) / 2));
 				for (int extra = 0; extra < (startY)-((LevelWidth) / 2); extra++) {
 					for (int index3 = 0; index3 < LevelWidth - 1; index3++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), extra, LevelWidth - 1 - index3);
 						PossibleStartingTiles.Add(Grid2DArray[extra]->TileColumn[LevelWidth - 1 - index3]);
 						Grid2DArray[extra]->TileColumn[LevelWidth - 1 - index3]->ShadeTestRoom();
 					}
 				}
 			}
-			//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d > %d"), startY, (LevelHeight - 1) / 2);
 			if (startY < ((LevelHeight - 1) / 2)) { //more than after AFTER startX
-				//UE_LOG(LogTemp, Log, TEXT("Check: %d"), (LevelWidth - startY - 1) - ((LevelWidth) / 2));
 				for (int extra = 0; extra < (LevelWidth - startY - 1) - ((LevelWidth) / 2); extra++) {
 					for (int index4 = 0; index4 < LevelWidth - 1; index4++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - extra, LevelWidth - 1 - index4);
 						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - extra]->TileColumn[LevelWidth - 1 - index4]);
 						Grid2DArray[LevelHeight - 1 - extra]->TileColumn[LevelWidth - 1 - index4]->ShadeTestRoom();
 					}
@@ -271,23 +253,19 @@ void ASTileManager::ChooseStartEndRooms()
 				}
 			}
 
-			//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
 			if (startX > (LevelWidth - 1) / 2) { //more than half AFTER startX
 				for (int extra = 0; extra < (startX)-((LevelHeight) / 2); extra++) {
 					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), index3, extra);
 						PossibleStartingTiles.Add(Grid2DArray[index3]->TileColumn[extra]);
 						Grid2DArray[index3]->TileColumn[extra]->ShadeTestRoom();
 					}
 				}
 			}
-			//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
 			if (startX < ((LevelWidth - 1) / 2)) { //more than after BEFORE startX
 				for (int extra = 0; extra < (LevelHeight - startX - 1) - ((LevelHeight) / 2); extra++) {
 					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), index4, LevelWidth - 1 - extra);
 						PossibleStartingTiles.Add(Grid2DArray[index4]->TileColumn[LevelWidth - 1 - extra]);
 						Grid2DArray[index4]->TileColumn[LevelWidth - 1 - extra]->ShadeTestRoom();
 					}
@@ -317,11 +295,9 @@ void ASTileManager::ChooseStartEndRooms()
 			}
 			if (startY > (LevelHeight - 1) / 2) { //more than half BEFORE startX
 				for (int extra = 0; extra < (startY)-((LevelWidth) / 2); extra++) {
-					//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startY, (LevelHeight - 1) / 2);
 				
 					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), extra, index3);
 						PossibleStartingTiles.Add(Grid2DArray[extra]->TileColumn[index3]);
 						Grid2DArray[extra]->TileColumn[index3]->ShadeTestRoom();
 					}
@@ -329,10 +305,8 @@ void ASTileManager::ChooseStartEndRooms()
 			}
 			if (startY < ((LevelHeight - 1) / 2)) { //more than after AFTER startX
 				for (int extra = 0; extra < (LevelWidth - startY - 1) - ((LevelWidth) / 2); extra++) {
-					//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startY, (LevelHeight - 1) / 2);
 					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"),  LevelWidth - 1 - extra, index4);
 						PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - extra]->TileColumn[index4]);
 						Grid2DArray[LevelWidth - 1 - extra]->TileColumn[index4]->ShadeTestRoom();
 					}
@@ -343,14 +317,11 @@ void ASTileManager::ChooseStartEndRooms()
 		default:
 			if (DebugPrints)
 				UE_LOG(LogTemp, Log, TEXT("Issue here -> picked weird starting side in ChooseStartEndRooms"));
-			//startY = 0;
-			//startX = GameStream.RandRange(0, LevelHeight - 1);
 			//DOWN	
 			for (int index2 = 0; index2 < (LevelWidth - 1) / 2; index2++) {
 				//take every tile less than startY
 				for (int index = 0; index < startX; index++)
 				{
-					//ASTile* Possible = Grid2DArray[LevelWidth - 1]->TileColumn[index];
 					PossibleStartingTiles.Add(Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]);
 					Grid2DArray[LevelWidth - 1 - index2]->TileColumn[index]->ShadeTestRoom();
 				}
@@ -363,23 +334,19 @@ void ASTileManager::ChooseStartEndRooms()
 				}
 			}
 
-			//UE_LOG(LogTemp, Log, TEXT("Compare1 BEFORE: %d > %d"), startX, (LevelWidth - 1) / 2);
 			if (startX > (LevelWidth - 1) / 2) { //more than half AFTER startX
 				for (int extra = 0; extra < (startX)-((LevelHeight) / 2); extra++) {
 					for (int index3 = 0; index3 < LevelHeight - 1; index3++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index3, extra);
 						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index3]->TileColumn[extra]);
 						Grid2DArray[LevelHeight - 1 - index3]->TileColumn[extra]->ShadeTestRoom();
 					}
 				}
 			}
-			//UE_LOG(LogTemp, Log, TEXT("Compare2 AFTER: %d < %d"), startX, (LevelWidth - 1) / 2);
 			if (startX < ((LevelWidth - 1) / 2)) { //more than after BEFORE startX
 				for (int extra = 0; extra < (LevelHeight - startX - 1) - ((LevelHeight) / 2); extra++) {
 					for (int index4 = 0; index4 < LevelHeight - 1; index4++)
 					{
-						//UE_LOG(LogTemp, Log, TEXT("Tile: %d, %d"), LevelHeight - 1 - index4, LevelWidth - 1 - extra);
 						PossibleStartingTiles.Add(Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1 - extra]);
 						Grid2DArray[LevelHeight - 1 - index4]->TileColumn[LevelWidth - 1 - extra]->ShadeTestRoom();
 					}
@@ -408,8 +375,6 @@ void ASTileManager::GeneratePath()
 		UE_LOG(LogTemp, Log, TEXT("=================== Genearating Path =============================="));
 
 	//add starting room to be start of list
-	//AddTileToPath(StartingTile);
-
 	CheckTile(StartingTile, LevelPath);
 
 	if (DebugPrints) {
@@ -417,7 +382,6 @@ void ASTileManager::GeneratePath()
 		for (int Index = 0; Index < LevelPath.Num() - 1; Index++)
 		{
 			DrawDebugLine(GetWorld(), LevelPath[Index]->GetActorLocation(), LevelPath[Index + 1]->GetActorLocation(), FColor::Blue, SDPG_World, 20.0f, 150);
-			//GetWorld()->LineBatcher->DrawLine(LevelPath[Index]->GetActorLocation(), LevelPath[Index + 1]->GetActorLocation(), FColor::Blue, SDPG_World, 10.0f, 100);
 		}
 	}
 
@@ -446,7 +410,6 @@ void ASTileManager::GeneratePath()
 			UE_LOG(LogTemp, Log, TEXT("=================== Finished Secret Room - Activating All Doors =============================="));
 
 	}
-
 
 
 	//if (DebugPrints)
@@ -486,7 +449,6 @@ void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
 	if ((!CurrentTile->UpNeighbor || CurrentTile->UpNeighbor->CheckForPath) && (!CurrentTile->DownNeighbor || CurrentTile->DownNeighbor->CheckForPath)
 		&& (!CurrentTile->RightNeighbor || CurrentTile->RightNeighbor->CheckForPath) && (!CurrentTile->LeftNeighbor || CurrentTile->LeftNeighbor->CheckForPath))
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Dead end found at %d,%d"), CurrentTile->XIndex, CurrentTile->ZIndex);
 		CurrentTile->CheckForPath = true;
 		CurrentTile->ShadeNull();
 
@@ -498,7 +460,6 @@ void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
 	} // boss room checks
 	else if ((CurrentTile->UpNeighbor != NULL && CurrentTile->UpNeighbor->TileStatus == ETileStatus::ETile_BOSSROOM))
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Found Boss Room! at %d,%d"), CurrentTile->UpNeighbor->XIndex, CurrentTile->UpNeighbor->ZIndex);
 		CurrentTile->CheckForPath = true;
 		AddTileToPath(CurrentTile);
 		AddTileToPath(CurrentTile->UpNeighbor);
@@ -506,21 +467,18 @@ void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
 	}
 	else if ((CurrentTile->DownNeighbor != NULL && CurrentTile->DownNeighbor->TileStatus == ETileStatus::ETile_BOSSROOM))
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Found Boss Room! at %d,%d"), CurrentTile->DownNeighbor->XIndex, CurrentTile->DownNeighbor->ZIndex);
 		CurrentTile->CheckForPath = true;
 		AddTileToPath(CurrentTile);
 		AddTileToPath(CurrentTile->DownNeighbor);
 	}
 	else if ((CurrentTile->RightNeighbor != NULL && CurrentTile->RightNeighbor->TileStatus == ETileStatus::ETile_BOSSROOM))
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Found Boss Room! at %d,%d"), CurrentTile->RightNeighbor->XIndex, CurrentTile->RightNeighbor->ZIndex);
 		CurrentTile->CheckForPath = true;
 		AddTileToPath(CurrentTile);
 		AddTileToPath(CurrentTile->RightNeighbor);
 	}
 	else if ((CurrentTile->LeftNeighbor != NULL && CurrentTile->LeftNeighbor->TileStatus == ETileStatus::ETile_BOSSROOM))
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Found Boss Room! at %d,%d"), CurrentTile->LeftNeighbor->XIndex, CurrentTile->LeftNeighbor->ZIndex);
 		CurrentTile->CheckForPath = true;
 		AddTileToPath(CurrentTile);
 		AddTileToPath(CurrentTile->LeftNeighbor);
@@ -528,7 +486,6 @@ void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
 	else {
 		//now that we know theres valid neighbors and none of them are the boss room, lets check our neighbors
 
-		//UE_LOG(LogTemp, Log, TEXT("Path Checking: %d,%d"), CurrentTile->XIndex, CurrentTile->ZIndex);
 		//direction
 		TArray <int> DirectionsToCheck = { 1, 2, 3, 4 };
 
@@ -545,7 +502,6 @@ void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
 					CurrentTile->UpNeighbor->TileStatus == ETileStatus::ETile_NULLROOM)
 				{
 					//add this tile to path, go to up neighbor
-					//UE_LOG(LogTemp, Log, TEXT("Up Neighbor Valid: %d,%d - going there"), CurrentTile->UpNeighbor->XIndex, CurrentTile->UpNeighbor->ZIndex);
 					CurrentTile->UpNeighbor->PreviousTile = CurrentTile;
 					AddTileToPath(CurrentTile);
 					//no need to keep going through other directions directions
@@ -558,7 +514,6 @@ void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
 				if (CurrentTile->DownNeighbor && !CurrentTile->DownNeighbor->CheckForPath && CurrentTile->DownNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM &&
 					CurrentTile->DownNeighbor->TileStatus == ETileStatus::ETile_NULLROOM)
 				{
-					//UE_LOG(LogTemp, Log, TEXT("Down Neighbor Valid: %d,%d - going there"), CurrentTile->DownNeighbor->XIndex, CurrentTile->DownNeighbor->ZIndex);
 					CurrentTile->DownNeighbor->PreviousTile = CurrentTile;
 					AddTileToPath(CurrentTile);
 					DirectionCount = 5;
@@ -570,7 +525,6 @@ void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
 				if (CurrentTile->LeftNeighbor && !CurrentTile->LeftNeighbor->CheckForPath && CurrentTile->LeftNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM &&
 					CurrentTile->LeftNeighbor->TileStatus == ETileStatus::ETile_NULLROOM)
 				{
-					//UE_LOG(LogTemp, Log, TEXT("Left Neighbor Valid: %d,%d - going there"), CurrentTile->LeftNeighbor->XIndex, CurrentTile->LeftNeighbor->ZIndex);
 					CurrentTile->LeftNeighbor->PreviousTile = CurrentTile;
 					AddTileToPath(CurrentTile);
 					DirectionCount = 5;
@@ -582,7 +536,6 @@ void ASTileManager::CheckTile(ASTile* CurrentTile, TArray<ASTile*> CurrentPath)
 				if (CurrentTile->RightNeighbor && !CurrentTile->RightNeighbor->CheckForPath && CurrentTile->RightNeighbor->TileStatus != ETileStatus::ETile_STARTINGROOM &&
 					CurrentTile->RightNeighbor->TileStatus == ETileStatus::ETile_NULLROOM)
 				{
-					//UE_LOG(LogTemp, Log, TEXT("Right Neighbor Valid: %d,%d - going there"), CurrentTile->RightNeighbor->XIndex, CurrentTile->RightNeighbor->ZIndex);
 					CurrentTile->RightNeighbor->PreviousTile = CurrentTile;
 					AddTileToPath(CurrentTile);
 					DirectionCount = 5;
@@ -631,8 +584,6 @@ void ASTileManager::AddRandomRooms()
 
 	for (int Branch = 0; Branch < BranchCount; Branch++)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Making Branch: %d"), Branch);
-
 		//for now using length of level, might change this later, not sure how else but not a super important detail
 		int BranchLength = GameStream.RandRange(1, LevelWidth);
 		UE_LOG(LogTemp, Log, TEXT("Making Branch: %d with length %d"), Branch, BranchLength);
@@ -751,8 +702,6 @@ void ASTileManager::AddSingleRooms()
 			return;
 		}
 	}
-
-
 }
 
 /// <summary>
@@ -833,8 +782,10 @@ void ASTileManager::CreateSpawnRoom()
 /// <summary>
 /// Dylan Log
 /// 
-/// - Compose list of all null neighbors of all active tiles (excluding start and boss rooms)
-/// - 
+/// - First find possible tiles to place:
+///		- Compose list of all null neighbors of all active tiles (excluding start and boss rooms)
+///		- outskirts of game map (any tile next to an edge)
+/// - similar to start room, assign to one of these possible tiles
 /// </summary>
 void ASTileManager::CreateSecretRoom()
 {
@@ -916,25 +867,19 @@ void ASTileManager::CreateSecretRoom()
 	FRotator SpawnRot;
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	//UE_LOG(LogTemp, Log, TEXT("Picked - %d - side of [%d,%d]"), selected.n[loc], selected.tile->XIndex, selected.tile->ZIndex);
-	//UE_LOG(LogTemp, Log, TEXT("Selected:  x= %d, y = %d], z = %d"), test->GetActorLocation().X, test->GetActorLocation().Y, test->GetActorLocation().Z);
 
 	//TO DO: weird but with center of tile being at the top, causing a 240 offset. Will need to investigate later
 	switch (selected.n[loc])
 	{
 		case 1:
 			//up
-			//UE_LOG(LogTemp, Log, TEXT("up neighbor"));
-			//FVector(StartingTile->GetActorLocation().X, StartingTile->GetActorLocation().Y + (StartingTile->TileLength), StartingTile->GetActorLocation().Z);
 			SpawnPos = FVector(selected.tile->GetActorLocation().X, selected.tile->GetActorLocation().Y + (StartingTile->TileLength), selected.tile->GetActorLocation().Z + 240);
-			//SpawnRot = FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, -90.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z);
 			SecretRoom = PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetSecretRoomTile, SpawnPos, SpawnRot, SpawnParams);
 			SecretRoom->DownNeighbor = selected.tile;
 			selected.tile->UpNeighbor = SecretRoom;
 			break;
 		case 2:
 			//down
-			//UE_LOG(LogTemp, Log, TEXT("down neighbor"));
 			SpawnPos = FVector(selected.tile->GetActorLocation().X, selected.tile->GetActorLocation().Y - (StartingTile->TileLength), selected.tile->GetActorLocation().Z + 240);
 			SpawnRot = FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, 180.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z);
 			SecretRoom = PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetSecretRoomTile, SpawnPos, SpawnRot, SpawnParams);
@@ -943,7 +888,6 @@ void ASTileManager::CreateSecretRoom()
 			break;
 		case 3:
 			//left
-			//UE_LOG(LogTemp, Log, TEXT("left neighbor"));
 			SpawnPos = FVector(selected.tile->GetActorLocation().X - (selected.tile->TileLength), selected.tile->GetActorLocation().Y, selected.tile->GetActorLocation().Z + 240);
 			SpawnRot = FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, 90.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z);
 			SecretRoom = PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetSecretRoomTile, SpawnPos, SpawnRot, SpawnParams);
@@ -952,7 +896,6 @@ void ASTileManager::CreateSecretRoom()
 			break;
 		case 4:
 			//right
-			//UE_LOG(LogTemp, Log, TEXT("right neighbor"));
 			SpawnPos = FVector(selected.tile->GetActorLocation().X + (selected.tile->TileLength), selected.tile->GetActorLocation().Y, selected.tile->GetActorLocation().Z + 240);
 			SpawnRot = FRotator(PlayerSpawnPresentTile->GetActorRotation().Euler().X, -90.0f, PlayerSpawnPresentTile->GetActorRotation().Euler().Z);
 			SecretRoom = PlayerSpawnPresentTile = GetWorld()->SpawnActor<ASTile>(MyLocalLevel->PresetSecretRoomTile, SpawnPos, SpawnRot, SpawnParams);
@@ -963,7 +906,6 @@ void ASTileManager::CreateSecretRoom()
 	// TO DO: this will need to be updated to a specific Secrete Room BP set in LocalLevel
 	
 	SecretRoom->SetActorLabel("SecretRoom");
-	//SecretRoom->SetOwner(this);
 #if WITH_EDITOR
 	SecretRoom->SetFolderPath(TileGenRootFolder);
 	SecretRoom->ShadeSecretRoom();
@@ -1099,8 +1041,6 @@ void ASTileManager::MakeAvailableTiles()
 /// </summary>
 void ASTileManager::ActivateAllDoors()
 {
-	//for(int pathCount)
-
 	for(int count = 0; count < LevelPath.Num(); count++)
 	{
 		LevelPath[count]->ActivateDoorToPath();
@@ -1111,7 +1051,6 @@ void ASTileManager::ActivateAllDoors()
 	{
 		AllActiveTiles[count2]->SyncDoors();
 	}
-
 }
 
 /// <summary>
@@ -1156,19 +1095,16 @@ TArray <int> ASTileManager::Reshuffle2(TArray <int> ar)
 void ASTileManager::LinkTile(ASTile* ThisTile, FMultiTileStruct Col)
 {
 	//for now I'm going to make right direction the positive one and left is negative
-
 	if (ThisTile->ZIndex > 0)
 	{
 		ThisTile->DownNeighbor = Col.TileColumn[ThisTile->ZIndex - 1];
 		ASTile* DownNeighbor = ThisTile->DownNeighbor;
 		Col.TileColumn[ThisTile->ZIndex - 1]->UpNeighbor = ThisTile;
-		//UE_LOG(LogTemp, Log, TEXT("Down neighbor: %f : %f"), DownNeighbor->XIndex, DownNeighbor->ZIndex);
 
 		//if doors are active, spawn a door at the tile placeholder
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		//if our lower neighbor doesn't already have a door connecting up
-		//UE_LOG(LogTemp, Log, TEXT("In script spawning doors"));
 		if (!DownNeighbor->UpDoor)
 		{
 			const FString TileDownDoorName = "TileDoorConnecting_" + FString::FromInt(ThisTile->XIndex) + "_" + FString::FromInt(ThisTile->ZIndex) + "_to_" + FString::FromInt(DownNeighbor->XIndex) + "_" + FString::FromInt(DownNeighbor->ZIndex);
@@ -1187,7 +1123,6 @@ void ASTileManager::LinkTile(ASTile* ThisTile, FMultiTileStruct Col)
 	{
 		ASTile* LeftNeighbor = ThisTile->LeftNeighbor = Grid2DArray[ThisTile->XIndex - 1]->TileColumn[ThisTile->ZIndex];
 		Grid2DArray[ThisTile->XIndex - 1]->TileColumn[ThisTile->ZIndex]->RightNeighbor = ThisTile;
-		//UE_LOG(LogTemp, Log, TEXT("Left neighbor: %f : %f"), LeftNeighbor->XIndex, LeftNeighbor->ZIndex);
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -1198,7 +1133,6 @@ void ASTileManager::LinkTile(ASTile* ThisTile, FMultiTileStruct Col)
 			
 			//add LeftDoorSpawnPoint location to ThisTiles location to give world location
 			FVector LeftDoorSpawnLocation = ThisTile->LeftDoorSpawnPoint.GetLocation() + ThisTile->GetActorLocation();
-			//FRotator LeftDoorSpawnRotation = ThisTile->LeftDoorSpawnPoint.GetRotation() + ThisTile->GetActorRotation();
 			const FTransform Spawm = FTransform(ThisTile->LeftDoorSpawnPoint.GetRotation(), LeftDoorSpawnLocation);
 			ThisTile->RightDoor = GetWorld()->SpawnActor<ASTileDoor>(TileDoor, Spawm, SpawnParams);
 			ThisTile->RightDoor->SetActorLabel(TileRightDoorName);
