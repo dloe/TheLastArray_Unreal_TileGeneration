@@ -9,6 +9,24 @@
 #include <Kismet/KismetMathLibrary.h>
 #include "../TheLastArray_Unreal.h"
 
+/// <summary>
+/// Tile generation Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/21/23
+/// 
+/// Notes:
+///  - Main System for Tile Genaration. 
+///  - Occurs On Game Load:
+///     - spawns the tiles
+///     - each level has a given amount of space to give in terms of room size
+///     - cant have levels be to big so certain criteria must be established
+///     - starts with starting room then works out choosing each puzzle pieces with given space
+///		- Main path will incorporate recursive backtracking maze algorithm
+///     -  ****once grid is made, we make a path from start to end. Then we make sure all the rooms are connected to main path****
+///     
+/// </summary>
+
 // Sets default values
 ASTileManager::ASTileManager()
 {
