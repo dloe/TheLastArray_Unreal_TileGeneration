@@ -7,6 +7,18 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include <TheLastArray_Unreal/Public/Attributes/SAttributeComponent.h>
 
+/// <summary>
+/// The Last Array - Unreal
+/// BT Task HealAI Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 EBTNodeResult::Type UUBTTask_HealAI::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* MyAIController = OwnerComp.GetAIOwner();

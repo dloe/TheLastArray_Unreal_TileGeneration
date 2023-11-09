@@ -9,6 +9,18 @@
 #include "Actions/SActionEffect.h"
 #include <Actions/SActionComponent.h>
 
+/// <summary>
+/// The Last Array - Unreal
+/// Magic Projectile Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {

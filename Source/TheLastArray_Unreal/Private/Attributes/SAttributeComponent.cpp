@@ -6,6 +6,7 @@
 #include <Actions/SActionComponent.h>
 
 /// <summary>
+/// The Last Array - Unreal
 /// Attribute Component Script
 /// Dylan Loe
 /// 

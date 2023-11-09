@@ -5,6 +5,18 @@
 #include <Runtime/GameplayTags/Classes/GameplayTagContainer.h>
 #include "Actions/SActionComponent.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Animimation Instance Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 void USAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();

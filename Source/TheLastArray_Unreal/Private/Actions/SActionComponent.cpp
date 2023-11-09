@@ -7,6 +7,18 @@
 
 DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_STANFORD)
 
+/// <summary>
+/// The Last Array - Unreal
+/// Action Component Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - Deals with actions and action management
+///     
+/// </summary>
+
 // Sets default values for this component's properties
 USActionComponent::USActionComponent()
 {

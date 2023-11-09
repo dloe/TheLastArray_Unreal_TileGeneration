@@ -6,6 +6,18 @@
 #include <Runtime/UMG/Public/Blueprint/WidgetLayoutLibrary.h>
 #include "Components/SizeBox.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// World User Widget Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 void USWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);

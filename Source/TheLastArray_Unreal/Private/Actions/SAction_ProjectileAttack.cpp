@@ -5,6 +5,18 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Action Projectile Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - An action specific for our projectile attacks
+///     
+/// </summary>
+
 USAction_ProjectileAttack::USAction_ProjectileAttack()
 {
 	HandSocketName = "Muzzle_01";

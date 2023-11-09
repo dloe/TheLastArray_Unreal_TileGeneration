@@ -4,6 +4,18 @@
 #include "Actions/SActionsPickup.h"
 #include "Actions/SActionComponent.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Action Pickups Script
+/// - Inherits from SAction
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - Actions specifically for pickups
+///     
+/// </summary>
 
 ASActionsPickup::ASActionsPickup()
 {

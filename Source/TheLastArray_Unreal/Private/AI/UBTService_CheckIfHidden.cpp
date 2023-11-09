@@ -4,6 +4,18 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// BT Service CheckIfHidden Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 void UUBTService_CheckIfHidden::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);

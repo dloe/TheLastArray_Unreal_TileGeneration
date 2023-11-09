@@ -20,6 +20,18 @@
 #include <Runtime/Engine/Classes/Engine/AssetManager.h>
 //dont think the eenvqueryrunmode enum is needed to include header
 
+/// <summary>
+/// The Last Array - Unreal
+/// GameMode Base Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 //cvar
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 

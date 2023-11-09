@@ -5,6 +5,18 @@
 #include "Net/UnrealNetwork.h"
 #include <TheLastArray_Unreal/Public/SSaveGame.h>
 
+/// <summary>
+/// The Last Array - Unreal
+/// Player State Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 ASPlayerState::ASPlayerState()
 {
 	Credits = 0;

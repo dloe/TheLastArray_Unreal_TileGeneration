@@ -9,6 +9,18 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Projectile Base Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 // Sets default values
 ASProjectileBase::ASProjectileBase()
 {

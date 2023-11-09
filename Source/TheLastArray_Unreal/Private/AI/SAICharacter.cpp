@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "AI/SAICharacter.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Attributes/SAttributeComponent.h"
@@ -14,6 +11,21 @@
 #include <TheLastArray_Unreal/Public/SGameModeBase.h>
 #include <Actions/SActionComponent.h>
 #include <TheLastArray_Unreal/TheLastArray_Unreal.h>
+
+/// <summary>
+/// The Last Array - Unreal
+/// AI Character Script
+/// - Inherits from ACharacter
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - All AI character 
+/// - Movement, death, etc
+/// - this is the core basics which I think I plan to build off of later
+///     
+/// </summary>
 
 // Sets default values
 ASAICharacter::ASAICharacter()

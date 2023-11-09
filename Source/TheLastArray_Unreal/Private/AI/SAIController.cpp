@@ -5,6 +5,19 @@
 #include <Runtime/Engine/Classes/Kismet/GameplayStatics.h>
 #include "BehaviorTree/BlackboardComponent.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// AI Controller Script
+/// - Inherits from AAIController
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - builds off to make our own AI controller
+///     
+/// </summary>
+
 void ASAIController::BeginPlay()
 {
 	Super::BeginPlay();

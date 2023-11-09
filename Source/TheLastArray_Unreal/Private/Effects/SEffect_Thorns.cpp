@@ -6,6 +6,18 @@
 #include "Attributes/SAttributeComponent.h"
 #include "Projectiles/SMagicProjectile.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Effect Thorns Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 USEffect_Thorns::USEffect_Thorns()
 {
 	ThornReflect = 0.33f;

@@ -6,6 +6,18 @@
 #include "Attributes/SAttributeComponent.h"
 #include "Player/SPlayerState.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Coin Pickup Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 ASCoinPickup::ASCoinPickup()
 {
 	PointValue = 10;

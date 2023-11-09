@@ -7,6 +7,18 @@
 #include "Widgets/SWorldUserWidget.h"
 #include <TheLastArray_Unreal/TheLastArray_Unreal.h>
 
+/// <summary>
+/// The Last Array - Unreal
+/// Interaction Actor Component Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("su.InteractionDebugDraw"), false, TEXT("Enable Debug lines for Interact Command."), ECVF_Cheat);
 
 // Sets default values for this component's properties

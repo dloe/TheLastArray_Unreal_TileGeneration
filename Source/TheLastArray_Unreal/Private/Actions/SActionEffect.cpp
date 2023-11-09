@@ -5,6 +5,18 @@
 #include "GameFramework/GameStateBase.h"
 #include "Actions/SActionComponent.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Action Effect Script
+/// - Inherits from SAction
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - effects management attatched to actions
+///     
+/// </summary>
 
 USActionEffect::USActionEffect()
 {

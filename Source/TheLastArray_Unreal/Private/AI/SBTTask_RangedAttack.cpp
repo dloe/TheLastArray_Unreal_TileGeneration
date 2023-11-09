@@ -7,7 +7,17 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include <TheLastArray_Unreal/Public/Attributes/SAttributeComponent.h>
 
-
+/// <summary>
+/// The Last Array - Unreal
+/// BT Task Ranged Attack Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
 
 USBTTask_RangedAttack::USBTTask_RangedAttack()
 {

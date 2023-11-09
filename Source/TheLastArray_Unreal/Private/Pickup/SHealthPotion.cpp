@@ -7,6 +7,18 @@
 
 #define LOCTEXT_NAMESPACE "InteractableActors"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Health Potion Pickup Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 // Sets default values
 ASHealthPotion::ASHealthPotion()
 {

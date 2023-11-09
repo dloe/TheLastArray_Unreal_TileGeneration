@@ -4,6 +4,18 @@
 #include "SGameplayFunctionLibrary.h"
 #include <TheLastArray_Unreal/Public/Attributes/SAttributeComponent.h>
 
+/// <summary>
+/// The Last Array - Unreal
+/// Gameplay Function Library Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 bool USGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount)
 {
 	//UE_LOG(LogTemp, Log, TEXT("In apply damage: %f on %d"), DamageAmount, *GetNameSafe(TargetActor));

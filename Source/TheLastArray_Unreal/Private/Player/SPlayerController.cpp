@@ -4,6 +4,17 @@
 #include "Player/SPlayerController.h"
 #include "Blueprint/UserWidget.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Player Controller Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
 
 void ASPlayerController::SetPawn(APawn* InPawn)
 {

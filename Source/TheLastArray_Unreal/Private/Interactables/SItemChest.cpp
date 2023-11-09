@@ -6,6 +6,18 @@
 #include "Net/UnrealNetwork.h"
 
 
+/// <summary>
+/// The Last Array - Unreal
+/// Item Chest Interactable Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 // Sets default values
 ASItemChest::ASItemChest()
 {

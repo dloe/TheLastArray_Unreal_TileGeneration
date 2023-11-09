@@ -3,6 +3,18 @@
 
 #include "SExplosiveBarrel.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Explosive Barrel Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
 {

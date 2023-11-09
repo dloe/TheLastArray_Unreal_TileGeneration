@@ -4,6 +4,18 @@
 #include "Effects/SThornsPickup.h"
 #include "Actions/SActionComponent.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Effect Thorns Pickup Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 ASThornsPickup::ASThornsPickup()
 {
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));

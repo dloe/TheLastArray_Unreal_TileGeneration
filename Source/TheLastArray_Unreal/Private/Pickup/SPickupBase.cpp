@@ -9,6 +9,17 @@
 #include <TheLastArray_Unreal/TheLastArray_Unreal.h>
 #include "SGameplayInterface.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// Base Pickup Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
 
 // Sets default values
 ASPickupBase::ASPickupBase()

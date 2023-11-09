@@ -1,8 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 #include "Actions/SAction.h"
 #include "Actions/SActionComponent.h"
 #include <TheLastArray_Unreal/TheLastArray_Unreal.h>
 #include <Runtime/Engine/Public/Net/UnrealNetwork.h>
+
+/// <summary>
+/// The Last Array - Unreal
+/// Action Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - Deals with running actions 
+///     
+/// </summary>
 
 void USAction::Initialize(USActionComponent* NewActionComp)
 {

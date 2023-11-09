@@ -5,6 +5,18 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 
+/// <summary>
+/// The Last Array - Unreal
+/// BT Service Check Attack Range Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - 
+///     
+/// </summary>
+
 void USBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
