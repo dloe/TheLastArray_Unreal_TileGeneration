@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -30,6 +28,7 @@ public:
 
 protected:
 
+#pragma region Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UParticleSystemComponent* EffectSpellCastComp;
 
@@ -47,6 +46,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadonly, Category = "Components")
 	USActionComponent* ActionComp;
+
+#pragma endregion
 
 	//TO DO
 	UPROPERTY(VisibleAnywhere, BlueprintReadonly, Category = "Player")
@@ -87,7 +88,6 @@ protected:
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
-
 
 	//slightly better way to bind your events in timeline
 	virtual void PostInitializeComponents() override;

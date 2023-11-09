@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Attributes/SAttributeComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Net/UnrealNetwork.h"
@@ -43,7 +40,7 @@ USAttributeComponent::USAttributeComponent()
 }
 
 /// <summary>
-/// 
+/// For debug and cheating purposes, able to insta-kill
 /// </summary>
 /// <param name="InstigatorActor"></param>
 /// <returns></returns>
@@ -53,7 +50,7 @@ bool USAttributeComponent::Kill(AActor* InstigatorActor)
 }
 
 /// <summary>
-/// 
+/// Check to confirm we are alive
 /// </summary>
 /// <returns></returns>
 bool USAttributeComponent::IsAlive() const
@@ -62,14 +59,14 @@ bool USAttributeComponent::IsAlive() const
 }
 
 /// <summary>
-/// 
+/// For applying changes to attribute by delta
 /// </summary>
 /// <param name="Instigator"></param>
 /// <param name="Delta"></param>
 /// <returns></returns>
 bool USAttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 {
-	//godmod
+	//godmode check (bypass)
 	if (!GetOwner()->CanBeDamaged() && Delta < 0.0f)
 		return false;
 
@@ -79,10 +76,8 @@ bool USAttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 		//return false;
 	//}
 
-
-
 	//this does it to EVERYTHING, including player, enemies, explosives, etc
-	//potentially could have mutliple versions to tweak more granularly
+	//potentially could have multiple versions to tweak more granularly
 	if (Delta < 0.0f)
 	{
 		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
@@ -92,12 +87,10 @@ bool USAttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 
 	float OldHealth = Health;
 	float NewHealth = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
-	//UE_LOG(LogTemp, Log, TEXT("before Health: %f"), Health);
 
-	//UE_LOG(LogTemp, Log, TEXT("after Health: %f"), Health);
 	float HealthDelta = NewHealth - OldHealth;
-	//OnHealthChanged.Broadcast(Instigator, this, Health, HealthDelta);
-
+	
+	//network integration
 	if (GetOwner()->HasAuthority())
 	{
 		Health = NewHealth;
@@ -105,13 +98,14 @@ bool USAttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 		if (HealthDelta != 0.0f)
 		{
 			MulticastHealthChanged(Instigator, Health, HealthDelta);
+			//OnHealthChanged.Broadcast(Instigator, this, Health, HealthDelta);
 		}
 
 		//UE_LOG(LogTemp, Log, TEXT("True Delta: %d"), FMath::Abs(Delta));
-//could add a rage multiplier
+		//TO DO: could add a rage multiplier?
 		ApplyRageChange(Instigator, FMath::Abs(Delta));
 
-		//died
+		//died :(
 		if (HealthDelta < 0.0f && Health == 0.0f)
 		{
 			ASGameModeBase* GM = GetWorld()->GetAuthGameMode<ASGameModeBase>();
@@ -121,33 +115,28 @@ bool USAttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 			}
 		}
 	}
-	//UE_LOG(LogTemp, Log, TEXT("New Health: %f"), Health);
-	//OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
-	//for now it will return true, we can add to this later
 
 	//make sure we know if this even applied a health change
 	return HealthDelta != 0;
 }
 
 /// <summary>
-/// 
+/// For applying RAGE changes to attribute by delta
 /// </summary>
 /// <param name="Instigator"></param>
 /// <param name="Delta"></param>
 void USAttributeComponent::ApplyRageChange(AActor* Instigator, float Delta)
 {
-	//UE_LOG(LogTemp, Log, TEXT("BEFORE Range Delta: %d"), Rage);
 	//add rage when we take damage
 	Rage = FMath::Clamp(Rage + Delta, 0.0f, RageMax);
-	//UE_LOG(LogTemp, Log, TEXT("AFTER Range Delta: %d"), Rage);
+
 	//Update Rage UI 
 	MulticastRageChanged(Instigator, Rage, Delta);
-	//OnRageChanged.Broadcast(this, Rage, Delta);
 
 }
 
 /// <summary>
-/// 
+/// Spend rage by costDelta
 /// </summary>
 /// <param name="Instigator"></param>
 /// <param name="CostDelta"></param>
@@ -163,17 +152,16 @@ bool USAttributeComponent::SpendRage(AActor* Instigator, float CostDelta)
 }
 
 /// <summary>
-/// 
+/// Check if we are under max health
 /// </summary>
 /// <returns></returns>
 bool USAttributeComponent::IsUnderMaxHealth() const
 {
-	//UE_LOG(LogTemp, Log, TEXT("Health: %f"), Health);
 	return Health < HealthMax;
 }
 
 /// <summary>
-/// 
+/// Get health max value
 /// </summary>
 /// <returns></returns>
 float USAttributeComponent::GetHealthMax() const
@@ -183,6 +171,7 @@ float USAttributeComponent::GetHealthMax() const
 
 /// <summary>
 /// Static function
+/// Getter for attribute component
 /// </summary>
 /// <param name="FromActor"></param>
 /// <returns></returns>
@@ -198,7 +187,7 @@ USAttributeComponent* USAttributeComponent::GetAttributes(AActor* FromActor)
 }
 
 /// <summary>
-/// 
+/// check if actor is alive, return bool
 /// </summary>
 /// <param name="Actor"></param>
 /// <returns></returns>
@@ -209,12 +198,13 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 	{
 		return AttributeComp->IsAlive();
 	}
-	//if we dont have an attribute assume we are dead
+	//if we don't have an attribute assume we are dead
 	return false;
 }
 
 /// <summary>
-/// 
+/// Replication
+/// - Sets up our replication properties that we want to set up for variables (so each variable Health, HealthMax, etc has a replicated keyword in header)
 /// </summary>
 /// <param name="OutLifetimeProps"></param>
 void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -225,11 +215,13 @@ void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(USAttributeComponent, HealthMax);
 	DOREPLIFETIME(USAttributeComponent, RageMax);
 	DOREPLIFETIME(USAttributeComponent, Rage);
-	//DOREPLIFETIME_CONDITION(USAttributeComponent, HealthMax, COND_InitialOnly);
+	
 }
 
 /// <summary>
-/// 
+/// Multicast HealthChanged
+/// - for health component
+/// - if called from server, clients will execute them locally to keep concurrency intact for network
 /// </summary>
 /// <param name="InstigatorActor"></param>
 /// <param name="NewHealth"></param>
@@ -240,7 +232,9 @@ void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* Instiga
 }
 
 /// <summary>
-/// 
+/// Multicast RageChanged
+/// - for rage component
+/// - if called from server, clients will execute them locally to keep concurrency intact for network
 /// </summary>
 /// <param name="InstigatorActor"></param>
 /// <param name="NewRage"></param>

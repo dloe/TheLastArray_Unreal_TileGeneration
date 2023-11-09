@@ -31,16 +31,17 @@ ASCharacter::ASCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	//
+	//for setting up third person camera
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
 	SpringArmComp->SetupAttachment(RootComponent);
 	SpringArmComp->bUsePawnControlRotation = true;
 
-	//
+	//camera component
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
 
-	//
+	//particle system component for shooting projectiles
+	//aka our effects component
 	EffectSpellCastComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
 	EffectSpellCastComp->SetupAttachment(RootComponent);
 
