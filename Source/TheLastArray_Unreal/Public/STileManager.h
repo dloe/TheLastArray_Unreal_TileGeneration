@@ -17,13 +17,11 @@ struct FMultiTileStruct
 public:
 	//each element of our array will contain this array of AActor*
 	UPROPERTY()
-	//TArray<TSubclassOf<ASTile>> TileColumn;
 	TArray<ASTile*> TileColumn;
 
 	//Constructor 
 	FMultiTileStruct()
 	{
-		//UE_LOG(LogTemp, Log, TEXT("In FMultiTileStruct Constructor..."));
 		TileColumn.Empty();
 	}
 
@@ -76,16 +74,20 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	FRandomStream GameStream;
 
-
+	//base tile used in initial setup
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	TSubclassOf<ASTile> TileBase;
+	//door objects we will be using to link each tile (can be turned on and off depending on level)
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	TSubclassOf<ASTileDoor> TileDoor;
+	//initial levelHeight (by tile)
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	int LevelHeight = 5;
+	//initial levelWidth (by tile)
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	int LevelWidth = 5;
 
+	//local level for type of level, setup of level assets, etc
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	ALocalLevel* MyLocalLevel;
 
@@ -96,6 +98,55 @@ public:
 	//root component
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* TilesRoot;
+
+	//end tile, found from picking from a list of possible tiles to give best path
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* EndTile;
+
+	//secret room reference (for extra loot and whatnot)
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* SecretRoom;
+#pragma endregion
+
+	
+protected:
+
+#pragma region TileGeneration vals
+	//single rooms
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	int FillerRooms = 0;
+
+	//list of possible starting tiles
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*> PossibleStartingTiles;
+
+	//list of possible branching tiles, they can be used off main path or branches
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*>	AvailableTiles;
+
+	//list of possible starting tiles
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*> LevelPath;
+
+	//list of possible starting tiles
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*> BackTrackHistory;
+
+	//list of possible starting tiles
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	int PathNumber = 0;
+
+	//list of current active tiles
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	TArray<ASTile*>	AllActiveTiles;
+
+	//starting tile reference
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* StartingTile;
+
+	//choosen tile when choosing initial entrance
+	UPROPERTY(EditAnywhere, Category = "Tile Generation")
+	ASTile* choosenOutskirtsTile;
 
 	//folder name for where tiles are placed when spawned
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
@@ -109,54 +160,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Tile Generation")
 	FName TileGenRootFolder;
 
-	//starting tile reference - TO DO: PROTECT THIS LATER
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	ASTile* StartingTile;
-
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	ASTile* choosen;
-
-	//starting tile reference - TO DO: PROTECT THIS LATER
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	ASTile* EndTile;
-
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	ASTile* SecretRoom;
-
-	//list of possible starting tiles - DO DO: PROTECT THIS LATER
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	TArray<ASTile*> PossibleStartingTiles;
-
-	//list of possible starting tiles - DO DO: PROTECT THIS LATER
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	TArray<ASTile*> LevelPath;
-
-	//list of possible starting tiles - DO DO: PROTECT THIS LATER
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	TArray<ASTile*> BackTrackHistory;
-
-	//list of possible starting tiles - DO DO: PROTECT THIS LATER
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	int PathNumber = 0;
-
-	//list of current active tiles - DO DO: PROTECT THIS LATER
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	TArray<ASTile*>	AllActiveTiles;
-
-	//list of possible branching tiles, they can be used off main path or branches - DO DO: PROTECT THIS LATER
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	TArray<ASTile*>	AvailableTiles;
-
-	//single rooms
-	UPROPERTY(EditAnywhere, Category = "Tile Generation")
-	int FillerRooms = 0;
-
-
-	
 #pragma endregion
 
-	
-protected:
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
