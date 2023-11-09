@@ -8,14 +8,29 @@
 #include "Actions/SActionEffect.h"
 #include <Actions/SActionComponent.h>
 
+/// <summary>
+/// Attribute Component Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - contains all our attributes
+///		- IE max health, health, 
+///  - idea is we can attach this attribute component to our player, ai characters, etc and will have a  manageable component for keeping track
+/// 
+/// - there is tests for server replication so this attribute component should have proper networking
+///     
+/// </summary>
 
+//cheat var for upping our damage for test purposes
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.DamageMultiplier"), 1.0f, TEXT("Global Damage Multiplier for Attribute Component."), ECVF_Cheat);
 
-// Sets default values for this component's properties
+/// <summary>
+/// Sets default values for this component's properties
+/// </summary>
 USAttributeComponent::USAttributeComponent()
 {
-	
-	
 	// set to max health on start
 	Health = HealthMax;
 	Rage = 0;
@@ -27,16 +42,31 @@ USAttributeComponent::USAttributeComponent()
 	SetIsReplicatedByDefault(true);
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="InstigatorActor"></param>
+/// <returns></returns>
 bool USAttributeComponent::Kill(AActor* InstigatorActor)
 {
 	return ApplyHealthChange(InstigatorActor, -GetHealthMax());
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 bool USAttributeComponent::IsAlive() const
 {
 	return Health > 0.0f;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="Instigator"></param>
+/// <param name="Delta"></param>
+/// <returns></returns>
 bool USAttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 {
 	//godmod
@@ -99,6 +129,11 @@ bool USAttributeComponent::ApplyHealthChange(AActor* Instigator, float Delta)
 	return HealthDelta != 0;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="Instigator"></param>
+/// <param name="Delta"></param>
 void USAttributeComponent::ApplyRageChange(AActor* Instigator, float Delta)
 {
 	//UE_LOG(LogTemp, Log, TEXT("BEFORE Range Delta: %d"), Rage);
@@ -111,6 +146,12 @@ void USAttributeComponent::ApplyRageChange(AActor* Instigator, float Delta)
 
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="Instigator"></param>
+/// <param name="CostDelta"></param>
+/// <returns></returns>
 bool USAttributeComponent::SpendRage(AActor* Instigator, float CostDelta)
 {
 	if (Rage > CostDelta)
@@ -121,20 +162,30 @@ bool USAttributeComponent::SpendRage(AActor* Instigator, float CostDelta)
 	return false;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 bool USAttributeComponent::IsUnderMaxHealth() const
 {
 	//UE_LOG(LogTemp, Log, TEXT("Health: %f"), Health);
 	return Health < HealthMax;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 float USAttributeComponent::GetHealthMax() const
 {
 	return HealthMax;
 }
 
-
-
-//static func
+/// <summary>
+/// Static function
+/// </summary>
+/// <param name="FromActor"></param>
+/// <returns></returns>
 USAttributeComponent* USAttributeComponent::GetAttributes(AActor* FromActor)
 {
 	if (FromActor)
@@ -146,6 +197,11 @@ USAttributeComponent* USAttributeComponent::GetAttributes(AActor* FromActor)
 	return nullptr;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="Actor"></param>
+/// <returns></returns>
 bool USAttributeComponent::IsActorAlive(AActor* Actor)
 {
 	USAttributeComponent* AttributeComp = GetAttributes(Actor);
@@ -157,6 +213,10 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 	return false;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="OutLifetimeProps"></param>
 void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -168,11 +228,23 @@ void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	//DOREPLIFETIME_CONDITION(USAttributeComponent, HealthMax, COND_InitialOnly);
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="InstigatorActor"></param>
+/// <param name="NewHealth"></param>
+/// <param name="Delta"></param>
 void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
 {
 	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="InstigatorActor"></param>
+/// <param name="NewRage"></param>
+/// <param name="Delta"></param>
 void USAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewRage, float Delta)
 {
 	OnRageChanged.Broadcast(this, Rage, Delta);

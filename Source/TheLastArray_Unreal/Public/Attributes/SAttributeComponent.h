@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -22,31 +20,22 @@ public:
 	USAttributeComponent();
 
 	//static functions
-
 	//assess our attributecomp much easier
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	static USAttributeComponent* GetAttributes(AActor* FromActor);
 
+	//check if our current actor is alive
 	UFUNCTION(BlueprintCallable, Category = "Attributes", meta = (DisplayName = "IsAlive"))
 	static bool IsActorAlive(AActor* Actor);
 
-
-
 protected:
-
-	
+	//TO DO: eventually add others such as stamina, strength
 
 	//health attribute
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float Health;
-
-	//other examples
-	//HealthMax, stamina, strength
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float HealthMax = 100;
-
-	//UFUNCTION(ReplicatedUsing="")
-	//bool bIsAlive;
 
 	UFUNCTION(NetMulticast, Reliable) //@FIXME: mark as unreliable once we move the 'state' out of sCharacter
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
@@ -62,8 +51,6 @@ protected:
 
 public:
 
-
-	
 	UFUNCTION(BlueprintCallable)
 	bool Kill(AActor* InstigatorActor);
 

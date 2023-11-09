@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Player/SCharacter.h"
 
 #include "Camera/CameraComponent.h"
@@ -14,32 +11,47 @@
 #include "Player/SPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 
+/// <summary>
+/// Player Controller Script
+/// Dylan Loe
+/// 
+/// Last Updated: 10/8/23
+/// 
+/// Notes:
+///  - Main controller for player movement (in 3d environment)
+///	 - incorporates attribute components to handle
+///  - incorporates action component to handle
+///  
+/// - this should have proper networking implementation in the event I end up adding some co-op option for this prototype.
+///     
+/// </summary>
+
 // Sets default values
 ASCharacter::ASCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
 	SpringArmComp->SetupAttachment(RootComponent);
 	SpringArmComp->bUsePawnControlRotation = true;
 
+	//
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
 
+	//
 	EffectSpellCastComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
 	EffectSpellCastComp->SetupAttachment(RootComponent);
 
 	InteractiveComp = CreateDefaultSubobject<USInteractionActorComponent>("InteractionComp");
-
 	AttributeComponent = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
-
 	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	//rotate to whatever we are moving towards
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
-	
+	// for now blackhole special abilities cost 25 rage, this is hardcoded for test purposes
 	BlackHoleRageCost = 25;
 	bUseControllerRotationYaw = false;
 
@@ -61,20 +73,6 @@ void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//APlayerController* PC = Cast<APlayerController>(GetController());
-	//PState = Cast<ASPlayerState>(PC->PlayerState);
-	//debug print out our credit amount
-	//int Credits = PState->GetCredits();
-	//UE_LOG(LogTemp, Log, TEXT("Player Credits on Start: %d"), PState->GetCredits());
-
-	//test thorns 
-	//if (ensure(ActionComp))
-	//{
-		//ActionComp->AddAction(this, ThornActionClass);
-		//set damage here?
-		//ThornActionClass->
-		//UE_LOG(LogTemp, Log, TEXT("check"));
-	//}
 }
 
 // Called every frame
@@ -84,7 +82,10 @@ void ASCharacter::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
+/// <summary>
+/// Called to bind functionality to input
+/// </summary>
+/// <param name="PlayerInputComponent"></param>
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -111,7 +112,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	//spawn projectile
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
 
-	//interactjion
+	//interaction
 	const FName interact = "PrimaryInteract";
 	PlayerInputComponent->BindAction(interact, IE_Pressed, this, &ASCharacter::PrimaryInteract);
 
@@ -120,7 +121,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
 }
 
-//movement
+//movement for forward moving and for moving right
 void ASCharacter::MoveForward(float value)
 {
 	FRotator ControlBot = GetControlRotation();
@@ -144,16 +145,25 @@ void ASCharacter::MoveRight(float value)
 }
 
 
+/// <summary>
+/// 
+/// - Runs when our player has a health change
+/// 
+/// </summary>
+/// <param name="InstigatorActor"> Instigator</param>
+/// <param name="OwningComp"> Owning Component</param>
+/// <param name="NewHealth"> New health value</param>
+/// <param name="Delta"> Health Delta Change</param>
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	if (Delta < 0.0f)                                                //Player took damange
+	//Player took damage
+	if (Delta < 0.0f) 
 	{
 		//UE_LOG(LogTemp, Log, TEXT("On Health changed!"));
 		//change material
 		
 			USkeletalMeshComponent* SkeletalMesh = GetMesh();
 			SkeletalMesh->SetScalarParameterValueOnMaterials(TimeToHitParameterName, GetWorld()->TimeSeconds);
-			//SkeletalMesh->SetParameterValueOnMaterials("HitFlashColor", HitFlashColor);
 			FVector4 ColortoVector = HitFlashColor;
 			SkeletalMesh->SetVectorParameterValueOnMaterials("HitFlashColor", ColortoVector);
 			
@@ -182,12 +192,18 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	}
 }
 
+/// <summary>
+/// Action Component: Start projectile attack for shooting
+/// </summary>
 void ASCharacter::PrimaryAttack()
 {
 	ActionComp->StartActionByName(this, "PrimaryAttack");
 
 }
 
+/// <summary>
+/// Interactive Component: run primary interact for item pickups, door interactions and others
+/// </summary>
 void ASCharacter::PrimaryInteract()
 {
 	if(InteractiveComp)
@@ -197,7 +213,10 @@ void ASCharacter::PrimaryInteract()
 	
 }
 
-//blackhole assignment 2
+/// <summary>
+/// Attribute Component: It costs rage to use this special attack, rage is stored in the attribute component
+/// Action Component: Start Blackhole action for blackhole attack
+/// </summary>
 void ASCharacter::BlackholeAttack()
 {
 	//check if we have rage to trigger
@@ -212,44 +231,56 @@ void ASCharacter::BlackholeAttack()
 
 }
 
+/// <summary>
+/// 
+/// - Originally this was all called inside our player but have moved the teleport ability to its own ActionComponent that we instead call here
+/// 
+/// </summary>
 void ASCharacter::TeleportAbility()
 {
-//	UE_LOG(LogTemp, Log, TEXT("Teleport Ability!"));
-//	//UE_LOG(LogTemp, Warning, TEXT("BH ATtACK!"));
-//	//copy down primary attack once we see the print
-//
-//	PlayAnimMontage(AttackAnim);
-//
-//
-//	GetWorldTimerManager().SetTimer(TimerHandle_TeleportAttack, this, &ASCharacter::TeleportAbility_TimeElasped, 0.2f);
-	//COULD ALSO DO THIS IN BP
+
+	//	GetWorldTimerManager().SetTimer(TimerHandle_TeleportAttack, this, &ASCharacter::TeleportAbility_TimeElasped, 0.2f);
+	//Note to self: This could also be done in bp
 	if (ActionComp->CheckActionName("Dash"))
 	{
 		ActionComp->StartActionByName(this, "Dash");
 	}
 }
 
-//cheat
+/// <summary>
+/// For debug/cheat purposes in testing
+/// 
+/// </summary>
+/// <param name="Amount"></param>
 void ASCharacter::HealSelf(float Amount /*= 100  */)
 {
 	AttributeComponent->ApplyHealthChange(this, Amount);
 
 }
 
-//override from 
+/// <summary>
+/// Overriding pawn view location for our own player usage
+/// </summary>
+/// <returns></returns>
 FVector ASCharacter::GetPawnViewLocation() const
 {
+	// Note to self: dont call super here since we return the incorrect value, lets use cameracomponent instead
 	//Super::GetPawnViewLocation();
 
 	return CameraComp->GetComponentLocation(); //FVector();
 }
 
-//actions
+
+/// <summary>
+///  Action Component: start sprint action
+/// </summary>
 void ASCharacter::SprintStart()
 {
 	ActionComp->StartActionByName(this, "Sprint");
 }
-
+/// <summary>
+/// Action Component: start sprint action
+/// </summary>
 void ASCharacter::SprintStop()
 {
 	ActionComp->StopActionByName(this, "Sprint");
