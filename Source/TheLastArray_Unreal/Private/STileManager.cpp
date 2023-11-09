@@ -870,7 +870,7 @@ void ASTileManager::CreateSecretRoom()
 
 	FTileInfoStruct selected = OutskirtTiles[tileNum];
 	ASTile* test = outskirtsCheck[tileNum];
-	choosen = outskirtsCheck[tileNum];
+	choosenOutskirtsTile = outskirtsCheck[tileNum];
 
 	//reshuffle our n value
 	selected.n = Reshuffle2(selected.n);
